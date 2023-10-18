@@ -5,6 +5,7 @@ import Model.Asteroid
 import Model.Spaceship
 import Model.UFO
 import View
+import Model.Model
 
 import Graphics.Gloss.Interface.IO.Game
 

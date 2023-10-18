@@ -17,5 +17,6 @@ executable my-gloss
                      , Model.Spaceship
                      , Model.Asteroid
                      , Model.UFO
+                     , Model.Model
                      , View
   default-language:    Haskell2010
