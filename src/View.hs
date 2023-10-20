@@ -2,10 +2,10 @@
 module View where
 
 import Graphics.Gloss
-import Model.Model
-import Model.Asteroid
-import Model.Spaceship
-import Model.UFO
+import Model
+import Asteroid
+import Spaceship
+import UFO
     -- ( GameState(infoToShow),
     --  InfoToShow(ShowAChar, ShowNothing, ShowANumber))
 

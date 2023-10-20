@@ -1,11 +1,11 @@
 module Main where
 
 import Controller
-import Model.Asteroid
-import Model.Spaceship
-import Model.UFO
+import Asteroid
+import Spaceship
+import UFO
 import View
-import Model.Model
+import Model
 
 import Graphics.Gloss.Interface.IO.Game
 

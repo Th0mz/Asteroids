@@ -1,5 +1,5 @@
 -- This module contains the data types which represent the state of the game in the context of the Spaceship
-module Model.Spaceship where
+module Spaceship where
 
 import qualified Graphics.Gloss as Data (Point, Vector, BitmapData)
 

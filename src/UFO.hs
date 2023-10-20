@@ -1,5 +1,5 @@
 -- This module contains the data types which represent the state of the game in the context of the UFO
-module Model.UFO where
+module UFO where
 
 import qualified Graphics.Gloss as Data (Point, Vector, BitmapData)
 
