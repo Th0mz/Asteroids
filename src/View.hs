@@ -11,7 +11,7 @@ import UFO
 
 view :: GameState -> IO Picture
 -- view = return . viewPure
-view _ = return Blank
+view _ = return renderSpaceship
 
 viewPure :: GameState -> Picture
 -- viewPure gsate = case infoToShow gstate of

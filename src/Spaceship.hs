@@ -1,14 +1,15 @@
 -- This module contains the data types which represent the state of the game in the context of the Spaceship
 module Spaceship where
 
-import qualified Graphics.Gloss as Data (Point, Vector, BitmapData)
+import Graphics.Gloss ( red, circle, color, Picture )
+import Model (Spaceship)
 
--- -- data InfoToShow = ShowNothing
--- --                 | ShowANumber Int
--- --                 | ShowAChar   Char
+-- ------------------------------------ --
+--              V I E W                 --
+-- ------------------------------------ --
+renderSpaceship :: Picture
+renderSpaceship = color red (circle 50)
 
--- nO_SECS_BETWEEN_CYCLES :: Float
--- nO_SECS_BETWEEN_CYCLES = undefined
---nO_SECS_BETWEEN_CYCLES = 5
-
--- data Spaceship = MkSpaceship Skin HitBox Velocity Acceleration Exploding
+-- ------------------------------------ --
+--         C O N T R O L L E R          --
+-- ------------------------------------ --
