@@ -1,8 +1,10 @@
 module Model where
 
-import qualified Graphics.Gloss as Data (Point, Vector, BitmapData)
+import qualified Graphics.Gloss as Data (Point, Vector, loadBMP)
 import GHC.Generics (UDouble)
 import Data.Data (ConstrRep(FloatConstr))
+import Graphics.Gloss (Picture)
+import Auxiliary.Constants
 
 -- properties
 type Radius = Float
@@ -14,9 +16,11 @@ data HitBox = MkHitBox {
     hRadius :: Radius
 }
 
+
 -- objects
 type Lives = Int
 data Spaceship = MkSpaceship {
+    sSkin :: IO Picture,
     sLives :: Lives,
     sHitBox :: HitBox, 
     sVelocity :: Data.Vector,
@@ -26,8 +30,9 @@ data Spaceship = MkSpaceship {
 
 initSpaceShip :: Spaceship
 initSpaceShip = MkSpaceship {
+    sSkin = Data.loadBMP spaceshipBitmap,
     sLives = 3,
-    sHitBox = MkHitBox {hPosition = (0, 0), hRadius = 20},
+    sHitBox = MkHitBox {hPosition = (0, 0), hRadius = spaceshipSize / 2},
     sVelocity = (50, 40),
     sAcceleration = (0, 0),
     sExploding = False

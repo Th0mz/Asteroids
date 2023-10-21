@@ -26,3 +26,16 @@ windowMinY = fromIntegral (- windowHeight `div` 2)
 windowMaxY :: Float
 windowMaxY = fromIntegral   (windowHeight `div` 2)
 
+-- -------------------- --
+--      P A T H S       --
+-- -------------------- --
+bitmapPaths :: String
+bitmapPaths = "./bitmaps"
+
+spaceshipBitmap :: String
+spaceshipBitmap = bitmapPaths ++ "/spaceshipSkin.bmp"
+
+spaceshipSize :: Float
+spaceshipSize = 32
+
+

@@ -5,7 +5,7 @@ import Model
 import Auxiliary.Constants
 
 
--- hitbox operations
+-- hitBox operations
 moveHitBox :: Float -> Vector -> HitBox -> HitBox
 moveHitBox delta velocity hitBox = 
     hitBox {hPosition = newPosition}
@@ -19,10 +19,10 @@ translatePos :: Float -> Point -> Vector -> Point
 translatePos delta (x, y) (vX, vY) = (x + vX * delta, y + vY * delta)
 
 wrapAroundPos :: Float -> Point -> Point
-wrapAroundPos slack (x, y) = (wrapAround x windowMinX windowMaxX, wrapAround y windowMinY windowMaxY)
+wrapAroundPos slack (x, y) = (wrapAroundCoord x windowMinX windowMaxX, wrapAroundCoord y windowMinY windowMaxY)
     where 
-        wrapAround :: Float -> Float -> Float -> Float
-        wrapAround value min max
+        wrapAroundCoord :: Float -> Float -> Float -> Float
+        wrapAroundCoord value min max
             | value <= slackMax && value >= slackMin = value
             | value > slackMax = slackMin
             | otherwise = slackMax

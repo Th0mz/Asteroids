@@ -3,13 +3,19 @@ module Asteroid where
 
 import qualified Graphics.Gloss as Data (Point, Vector, BitmapData)
 
---data InfoToShow = ShowNothing
---                 | ShowANumber Int
---                 | ShowAChar   Char
+-- ------------------------------------ --
+--              V I E W                 --
+-- ------------------------------------ --
 
--- nO_SECS_BETWEEN_CYCLES :: Float
--- nO_SECS_BETWEEN_CYCLES = 5
+-- ------------------------------------ --
+--         C O N T R O L L E R          --
+-- ------------------------------------ --
 
--- data Size = Small | Medium | Large
--- data Asteroid = MkAsteroid Skin HitBox Velocity Exploding Size
--- data Bullet = MkBullet Skin HitBox Velocity LifeTime
+-- very similar to the asteroid movement
+-- stepSpaceShip :: Float -> GameState -> GameState
+-- stepSpaceShip delta gameState@(MkGameState {gsSpaceship = spaceship}) =
+--     gameState {gsSpaceship = newSpaceship}
+--     where
+--         hitBox = sHitBox spaceship
+--         velocity = sVelocity spaceship
+--         newSpaceship = spaceship {sHitBox = moveHitBox delta velocity hitBox}
