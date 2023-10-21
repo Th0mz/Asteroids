@@ -1,85 +1,94 @@
 module Model where
 
 import qualified Graphics.Gloss as Data (Point, Vector, BitmapData)
+import GHC.Generics (UDouble)
+import Data.Data (ConstrRep(FloatConstr))
 
 -- properties
 type Radius = Float
 type LifeTime = Float
 type Exploding = Bool
 
--- rendering/physics
-type Skin = Data.BitmapData
-type Position = Data.Point
-type Velocity = Data.Vector
-type Acceleration = Data.Vector
-data HitBox = MkHitBox Position Radius
-data Size = Small | Medium | Large
+data HitBox = MkHitBox {
+    hPosition :: Data.Point,
+    hRadius :: Radius
+}
 
 -- objects
-data Spaceship = MkSpaceship Skin HitBox Velocity Acceleration Exploding
-data Asteroid = MkAsteroid Skin HitBox Velocity Exploding Size
-data Bullet = MkBullet Skin HitBox Velocity LifeTime
-data UFO = MkUFO Skin HitBox Velocity Exploding
-
--- states
-type Paused = Bool
 type Lives = Int
+data Spaceship = MkSpaceship {
+    sLives :: Lives,
+    sHitBox :: HitBox, 
+    sVelocity :: Data.Vector,
+    sAcceleration :: Data.Vector,
+    sExploding :: Exploding 
+}
+
+initSpaceShip :: Spaceship
+initSpaceShip = MkSpaceship {
+    sLives = 3,
+    sHitBox = MkHitBox {hPosition = (0, 0), hRadius = 20},
+    sVelocity = (50, 40),
+    sAcceleration = (0, 0),
+    sExploding = False
+}
+
+data Size = Small | Medium | Large
+data Asteroid = MkAsteroid {
+    aHitBox :: HitBox, 
+    aVelocity :: Data.Vector, 
+    aExploding :: Exploding, 
+    aSize :: Size
+}
+
+data Bullet = MkBullet {
+    
+    bHitBox :: HitBox, 
+    bVelocity :: Data.Vector, 
+    bLifeTime :: LifeTime
+}
+
+data UFO = MkUFO {
+    uHitBox :: HitBox, 
+    uVelocity :: Data.Vector, 
+    uExploding :: Exploding
+}
+
+-- general game state
+type Paused = Bool
 type Score = Int
+
+-- high scores
 type Name = String
 type HSEntry = (Name, Score)
+type HighScores = [HSEntry]
 
-data Direction = Up | Down | Left | Right | None
-data KeyBoard = Direction | Space | Pause
+-- TODO: supposed to be at model file?
+loadHighScores :: String -> HighScores
+loadHighScores _ = [] 
+
+-- player input
+data KeyBoard = Up | Down | Left | Right | Space | Pause | None
 
 initialState :: GameState
 initialState = MkGameState {
-    test = 0,
-    test1 = 0
+    gsSpaceship = initSpaceShip,
+    gsAsteroids = [],
+    gsUfos = [],
+    gsBullets = [],
+    gsScore = 0,
+    gsHighScores = loadHighScores "file_name.json",
+    gsKeyboard = None,
+    gsIsPaused = False
 }
 
 data GameState = MkGameState {
-    test :: Int,
-    test1 :: Int
+    gsSpaceship  :: Spaceship,
+    gsAsteroids  :: [Asteroid],
+    gsUfos       :: [UFO],
+    gsBullets    :: [Bullet],
+    gsScore      :: Score,
+    gsHighScores :: [HSEntry],
+    gsKeyboard   :: KeyBoard,
+    gsIsPaused   :: Paused
 }
-
-
--- initialState :: GameState
--- initialState = MkGameState {
---     spaceship  = Spaceship,
---     asteroids  = [],
---     ufos       = [],
---     bullets    = [],
---     score      = 0,
---     lives      = 3,
---     highScores = loadHighScores "file_name.txt",
---     input      = None,
---     isPaused   = False,
---     -- skins
---     spaceshipSkin = loadSkin "spaceshipSkin.bmp",
---     sAsteroidSkin = loadSkin "sAsteroidSkin.bmp",
---     mAsteroidSkin = loadSkin "mAsteroidSkin.bmp",
---     lAsteroidSkin = loadSkin "lAsteroidSkin.bmp",
---     bulletSkin    = loadSkin "bulletSkin.bmp",
---     ufoSkin       = loadSkin "ufoSkin.bmp"
---     -- animations
--- }
-
--- data GameState = MkGameState {
---     spaceship  :: Spaceship,
---     asteroids  :: [Asteroid],
---     ufos       :: [UFO],
---     bullets    :: [Bullet],
---     score      :: Score,
---     lives      :: Lives,
---     highScores :: [HSEntry],
---     input      :: KeyBoard,
---     isPaused   :: Paused,
---     -- skins
---     spaceshipSkin :: Skin,
---     sAsteroidSkin :: Skin,
---     mAsteroidSkin :: Skin,
---     lAsteroidSkin :: Skin,
---     bulletSkin    :: Skin,
---     ufoSkin       :: Skin
---     -- animations
--- }
