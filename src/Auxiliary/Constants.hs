@@ -38,4 +38,20 @@ spaceshipBitmap = bitmapPaths ++ "/spaceshipSkin.bmp"
 spaceshipSize :: Float
 spaceshipSize = 32
 
+sAsteroidBitmap :: String
+sAsteroidBitmap = bitmapPaths ++ "/sAsteroidSkin.bmp"
 
+sAsteroidSize :: Float
+sAsteroidSize = 40
+
+mAsteroidBitmap :: String
+mAsteroidBitmap = bitmapPaths ++ "/mAsteroidSkin.bmp"
+
+mAsteroidSize :: Float
+mAsteroidSize = 50
+
+lAsteroidBitmap :: String
+lAsteroidBitmap = bitmapPaths ++ "/lAsteroidSkin.bmp"
+
+lAsteroidSize :: Float
+lAsteroidSize = 60
