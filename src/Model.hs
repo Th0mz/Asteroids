@@ -58,7 +58,7 @@ initAsteroid size = MkAsteroid {
         Medium -> mAsteroidSize / 2
         Large -> lAsteroidSize / 2
     },
-    aVelocity = (20, 20),
+    aVelocity = (10, 10),
     aExploding = False,
     aSize = size
 }

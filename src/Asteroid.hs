@@ -10,28 +10,36 @@ import Model ( Asteroid (MkAsteroid, aSkin, aHitBox, aVelocity, aExploding, aSiz
 
 import GHC.Num.BigNat (raiseDivZero_BigNat)
 import Auxiliary.Operations
+import Auxiliary.Constants
+import System.Random
 
 -- ------------------------------------ --
 --              V I E W                 --
 -- ------------------------------------ --
 
 renderAsteroidHB :: Asteroid -> IO Picture
-renderAsteroidHB asteroid =
-    return $
-    Translate x y $
-    color white (circle radius)
-    where
-        hitBox = aHitBox asteroid
-        (x, y) = hPosition hitBox
-        radius = hRadius hitBox
+renderAsteroidHB asteroid = do
+    --(x, y) <- randomAsteroidPosition asteroid, doesn't yet do the right thing
+    let (x, y) = hPosition hitBox
+    return $ Translate x y $ color white (circle radius)
+  where
+    hitBox = aHitBox asteroid
+    radius = hRadius hitBox
 
 renderAsteroid :: Asteroid -> IO Picture
 renderAsteroid asteroid = do
+    --(x, y) <- randomAsteroidPosition asteroid, doesn't yet do the right thing
+    let (x, y) = hPosition hitBox
     skin <- aSkin asteroid
-    return (translate x y skin)
-    where
+    return $ translate x y skin
+    where 
         hitBox = aHitBox asteroid
-        (x, y) = hPosition hitBox
+
+randomAsteroidPosition :: Asteroid -> IO (Float, Float)
+randomAsteroidPosition asteroid = do
+    randomX <- randomRIO (fromIntegral (- windowWidth `div` 2), fromIntegral (windowWidth `div` 2))
+    randomY <- randomRIO (fromIntegral (- windowHeight `div` 2), fromIntegral (windowHeight `div` 2))
+    return (randomX, randomY)
 
 -- ------------------------------------ --
 --         C O N T R O L L E R          --
