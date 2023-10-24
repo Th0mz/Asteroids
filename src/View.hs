@@ -10,12 +10,15 @@ import UFO
     --  InfoToShow(ShowAChar, ShowNothing, ShowANumber))
 
 view :: GameState -> IO Picture
--- view = return . viewPure
-view MkGameState {gsSpaceship = spaceship} = do
-    spaceshipPicture <- renderSpaceship spaceship
-    spaceshipPictureHB <- renderSpaceshipHB spaceship
-
-    return $ Pictures [spaceshipPicture, spaceshipPictureHB]
+view gameState = do
+    spaceshipPicture   <- renderSpaceship (gsSpaceship gameState)
+    spaceshipPictureHB <- renderSpaceshipHB (gsSpaceship gameState)
+    asteroidPictures   <- mapM renderAsteroid (gsAsteroids gameState)
+    asteroidPicturesHB <- mapM renderAsteroidHB (gsAsteroids gameState)
+   
+    return $ Pictures $
+        [spaceshipPicture, spaceshipPictureHB] 
+        ++ asteroidPictures ++ asteroidPicturesHB
     
 viewPure :: GameState -> Picture
 -- viewPure gsate = case infoToShow gstate of
