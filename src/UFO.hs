@@ -64,3 +64,6 @@ moveUfo delta ufos = map moveSingleUfo ufos
         hitBox = uHitBox ufo
         velocity = uVelocity ufo
         newHitBox = moveHitBox delta velocity hitBox
+
+addUfo :: UFO -> [UFO] -> [UFO]
+addUfo newUfo asteroids = newUfo : asteroids

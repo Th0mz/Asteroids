@@ -54,8 +54,8 @@ initAsteroid size = MkAsteroid {
         Large -> lAsteroidBitmap,
     aHitBox = MkHitBox {hPosition = case size of --here, a random starting position should be implemented, not fixed values!!!
         Small -> (40, 80)
-        Medium -> (200,400)
-        Large -> (450, 550),
+        Medium -> (200,100)
+        Large -> (650, 450),
     hRadius = case size of
         Small -> sAsteroidSize / 2
         Medium -> mAsteroidSize / 2
@@ -107,7 +107,7 @@ initialState :: GameState
 initialState = MkGameState {
     gsSpaceship = initSpaceShip,
     gsAsteroids = [initAsteroid Small, initAsteroid Medium, initAsteroid Large],
-    gsUfos = [initUfo],
+    gsUfos = [initUfo], --start with empty list, no asteroids
     gsBullets = [],
     gsScore = 0,
     gsHighScores = loadHighScores "file_name.json",

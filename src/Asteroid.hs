@@ -64,3 +64,7 @@ moveAsteroid delta asteroids = map moveSingleAsteroid asteroids
         hitBox = aHitBox asteroid
         velocity = aVelocity asteroid
         newHitBox = moveHitBox delta velocity hitBox
+
+addAsteroid :: Asteroid -> [Asteroid] -> [Asteroid]
+addAsteroid newAsteroid asteroids = newAsteroid : asteroids
+
