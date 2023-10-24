@@ -6,10 +6,17 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import System.Random
 import Spaceship
+import Asteroid
+import UFO
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
-step secs gameState = return $ stepSpaceShip secs gameState
+step secs gameState = do
+    return updatedUFOState
+  where
+    updatedSpaceshipState = stepSpaceShip secs gameState
+    updatedAsteroidState = stepAsteroid secs updatedSpaceshipState
+    updatedUFOState = stepUfo secs updatedAsteroidState
 
 --step secs gstate
 --  | elapsedTime gstate + secs > nO_SECS_BETWEEN_CYCLES

@@ -15,10 +15,13 @@ view gameState = do
     spaceshipPictureHB <- renderSpaceshipHB (gsSpaceship gameState)
     asteroidPictures   <- mapM renderAsteroid (gsAsteroids gameState)
     asteroidPicturesHB <- mapM renderAsteroidHB (gsAsteroids gameState)
+    ufoPictures   <- mapM renderUfo (gsUfos gameState)
+    ufoPicturesHB <- mapM renderUfoHB (gsUfos gameState)
    
     return $ Pictures $
         [spaceshipPicture, spaceshipPictureHB] 
         ++ asteroidPictures ++ asteroidPicturesHB
+        ++ ufoPictures ++ ufoPicturesHB
     
 viewPure :: GameState -> Picture
 -- viewPure gsate = case infoToShow gstate of

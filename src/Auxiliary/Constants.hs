@@ -55,3 +55,9 @@ lAsteroidBitmap = bitmapPaths ++ "/lAsteroidSkin.bmp"
 
 lAsteroidSize :: Float
 lAsteroidSize = 100
+
+ufoBitmap :: String
+ufoBitmap = bitmapPaths ++ "ufoSkin.bmp"
+
+ufoSize :: Float
+ufoSize = 32

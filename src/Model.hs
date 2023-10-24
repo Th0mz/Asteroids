@@ -16,7 +16,6 @@ data HitBox = MkHitBox {
     hRadius :: Radius
 }
 
-
 -- objects
 type Lives = Int
 data Spaceship = MkSpaceship {
@@ -53,12 +52,16 @@ initAsteroid size = MkAsteroid {
         Small -> sAsteroidBitmap
         Medium -> mAsteroidBitmap
         Large -> lAsteroidBitmap,
-    aHitBox = MkHitBox {hPosition = (0, 0), hRadius = case size of
+    aHitBox = MkHitBox {hPosition = case size of --here, a random starting position should be implemented, not fixed values!!!
+        Small -> (40, 80)
+        Medium -> (200,400)
+        Large -> (450, 550),
+    hRadius = case size of
         Small -> sAsteroidSize / 2
         Medium -> mAsteroidSize / 2
         Large -> lAsteroidSize / 2
     },
-    aVelocity = (10, 10),
+    aVelocity = (20, 20),
     aExploding = False,
     aSize = size
 }
@@ -69,10 +72,19 @@ data Bullet = MkBullet {
     bLifeTime :: LifeTime
 }
 
-data UFO = MkUFO {
+data UFO = MkUfo {
+    uSkin :: IO Picture,
     uHitBox :: HitBox, 
     uVelocity :: Data.Vector, 
     uExploding :: Exploding
+}
+
+initUfo :: UFO
+initUfo = MkUfo {
+    uSkin = Data.loadBMP ufoBitmap,
+    uHitBox = MkHitBox {hPosition = (80, 80), hRadius = ufoSize / 2}, --also here, random starting position
+    uVelocity = (30, 30),
+    uExploding = False
 }
 
 -- general game state
@@ -95,7 +107,7 @@ initialState :: GameState
 initialState = MkGameState {
     gsSpaceship = initSpaceShip,
     gsAsteroids = [initAsteroid Small, initAsteroid Medium, initAsteroid Large],
-    gsUfos = [],
+    gsUfos = [initUfo],
     gsBullets = [],
     gsScore = 0,
     gsHighScores = loadHighScores "file_name.json",
