@@ -1,7 +1,7 @@
 module Auxiliary.Constants where
 
 framesPerSecond :: Int
-framesPerSecond = 10
+framesPerSecond = 60
 
 -- -------------------- --
 --     C A N V A S      --
