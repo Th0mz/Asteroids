@@ -19,7 +19,6 @@ import System.Random
 
 renderAsteroidHB :: Asteroid -> IO Picture
 renderAsteroidHB asteroid = do
-    --(x, y) <- randomAsteroidPosition asteroid--, doesn't yet do the right thing
     let (x, y) = hPosition hitBox
     return $ Translate x y $ color white (circle radius)
   where
@@ -28,18 +27,11 @@ renderAsteroidHB asteroid = do
 
 renderAsteroid :: Asteroid -> IO Picture
 renderAsteroid asteroid = do
-    --(x, y) <- randomAsteroidPosition asteroid--, doesn't yet do the right thing
     let (x, y) = hPosition hitBox
     skin <- aSkin asteroid
     return $ translate x y skin
     where 
         hitBox = aHitBox asteroid
-
--- randomAsteroidPosition :: Asteroid -> IO (Float, Float)
--- randomAsteroidPosition asteroid = do
---     randomX <- randomRIO (fromIntegral (- windowWidth `div` 2), fromIntegral (windowWidth `div` 2))
---     randomY <- randomRIO (fromIntegral (- windowHeight `div` 2), fromIntegral (windowHeight `div` 2))
---     return (randomX, randomY)
 
 -- ------------------------------------ --
 --         C O N T R O L L E R          --
@@ -64,7 +56,3 @@ moveAsteroid delta asteroids = map moveSingleAsteroid asteroids
         hitBox = aHitBox asteroid
         velocity = aVelocity asteroid
         newHitBox = moveHitBox delta velocity hitBox
-
-addAsteroid :: Asteroid -> [Asteroid] -> [Asteroid]
-addAsteroid newAsteroid asteroids = newAsteroid : asteroids
-

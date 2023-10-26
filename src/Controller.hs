@@ -8,6 +8,7 @@ import System.Random
 import Spaceship
 import Asteroid
 import UFO
+import Auxiliary.Operations
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
@@ -40,3 +41,9 @@ inputKey :: Event -> GameState -> GameState
 -- inputKey _ gstate = gstate -- Otherwise keep the 
 inputKey = undefined
 
+-- shooting
+shootBulletFromUfo :: GameState -> GameState
+shootBulletFromUfo = undefined
+
+shootBulletFromSpaceship :: GameState -> GameState
+shootBulletFromSpaceship = undefined

@@ -3,23 +3,21 @@ module UFO where
 
 import Graphics.Gloss ( white, circle, color, Picture (Translate), Point, Vector, translate )
 import Model ( UFO (MkUfo, uHitBox, uVelocity, uSkin),
+               Spaceship (MkSpaceship, sHitBox, sVelocity, sSkin),
                HitBox (MkHitBox, hPosition, hRadius),
                GameState (MkGameState, gsUfos)
 
              )
 import GHC.Num.BigNat (raiseDivZero_BigNat)
 import Auxiliary.Operations
+import Spaceship
 
--- data InfoToShow = ShowNothing
---                 | ShowANumber Int
---                 | ShowAChar   Char
-
--- nO_SECS_BETWEEN_CYCLES :: Float
--- nO_SECS_BETWEEN_CYCLES = 5
+-- ------------------------------------ --
+--              V I E W                 --
+-- ------------------------------------ --
 
 renderUfoHB :: UFO -> IO Picture
 renderUfoHB ufo = do
-    --(x, y) <- randomAsteroidPosition asteroid--, doesn't yet do the right thing
     let (x, y) = hPosition hitBox
     return $ Translate x y $ color white (circle radius)
   where
@@ -28,18 +26,11 @@ renderUfoHB ufo = do
 
 renderUfo :: UFO -> IO Picture
 renderUfo ufo = do
-    --(x, y) <- randomAsteroidPosition asteroid--, doesn't yet do the right thing
     let (x, y) = hPosition hitBox
     skin <- uSkin ufo
     return $ translate x y skin
     where 
         hitBox = uHitBox ufo
-
--- randomAsteroidPosition :: Asteroid -> IO (Float, Float)
--- randomAsteroidPosition asteroid = do
---     randomX <- randomRIO (fromIntegral (- windowWidth `div` 2), fromIntegral (windowWidth `div` 2))
---     randomY <- randomRIO (fromIntegral (- windowHeight `div` 2), fromIntegral (windowHeight `div` 2))
---     return (randomX, randomY)
 
 -- ------------------------------------ --
 --         C O N T R O L L E R          --
@@ -65,5 +56,6 @@ moveUfo delta ufos = map moveSingleUfo ufos
         velocity = uVelocity ufo
         newHitBox = moveHitBox delta velocity hitBox
 
-addUfo :: UFO -> [UFO] -> [UFO]
-addUfo newUfo asteroids = newUfo : asteroids
+calcUfoSpaceshipPos :: Spaceship -> UFO -> Float -> Point
+calcUfoSpaceshipPos spaceship ufo delta = 
+  translatePos delta (hPosition (sHitBox spaceship)) (uVelocity ufo)
