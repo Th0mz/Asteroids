@@ -47,3 +47,18 @@ shootBulletFromUfo = undefined
 
 shootBulletFromSpaceship :: GameState -> GameState
 shootBulletFromSpaceship = undefined
+
+-- exploding (creates 2 smaller asteroids when one is shot)
+explodeAsteroid :: Asteroid -> [Asteroid]
+explodeAsteroid asteroid
+    | aExploding asteroid = case aSize asteroid of
+        Large -> []--[randomMediumAsteroid, randomMediumAsteroid] 
+        Medium -> []--[randomSmallAsteroid, randomSmallAsteroid]
+        Small -> []
+    | otherwise = [asteroid]
+    where
+        createExplodedAsteroid newSize = asteroid {
+            aHitBox = (aHitBox asteroid) { hPosition = (0,0)},--aHitBox asteroid },
+            aVelocity = (40, 40),
+            aSize = newSize
+        }

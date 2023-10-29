@@ -95,7 +95,7 @@ data UFO = MkUfo {
     uExploding :: Exploding
 }
 
-initUfo ::IO UFO
+initUfo :: IO UFO
 initUfo = do
     randomX <- randomRIO (windowMinX, windowMaxX)
     randomY <- randomRIO (windowMinY, windowMaxY)
