@@ -4,6 +4,7 @@ import qualified Graphics.Gloss as Data (Point, Vector, loadBMP)
 import GHC.Generics (UDouble)
 import Data.Data (ConstrRep(FloatConstr))
 import Graphics.Gloss (Picture)
+import System.Random
 import Auxiliary.Constants
 
 -- properties
@@ -16,8 +17,7 @@ data HitBox = MkHitBox {
     hRadius :: Radius
 }
 
-
--- objects
+-- spaceship
 type Lives = Int
 data Spaceship = MkSpaceship {
     sSkin :: IO Picture,
@@ -38,6 +38,7 @@ initSpaceShip = MkSpaceship {
     sExploding = False
 }
 
+-- asteroid
 data Size = Small | Medium | Large
 data Asteroid = MkAsteroid {
     aSkin :: IO Picture,
@@ -47,33 +48,66 @@ data Asteroid = MkAsteroid {
     aSize :: Size
 }
 
-initAsteroid :: Size -> Asteroid
-initAsteroid size = MkAsteroid {
-    aSkin = Data.loadBMP $ case size of
-        Small -> sAsteroidBitmap
-        Medium -> mAsteroidBitmap
-        Large -> lAsteroidBitmap,
-    aHitBox = MkHitBox {hPosition = (0, 0), hRadius = case size of
-        Small -> sAsteroidSize / 2
-        Medium -> mAsteroidSize / 2
-        Large -> lAsteroidSize / 2
-    },
-    aVelocity = (10, 10),
-    aExploding = False,
-    aSize = size
-}
+initAsteroid :: Size -> IO Asteroid
+initAsteroid size = do
+    randomX <- randomRIO (windowMinX, windowMaxX)
+    randomY <- randomRIO (windowMinY, windowMaxY)
+    return MkAsteroid {
+        aSkin = Data.loadBMP $ case size of
+            Small -> sAsteroidBitmap
+            Medium -> mAsteroidBitmap
+            Large -> lAsteroidBitmap,
+        aHitBox = MkHitBox { hPosition = (randomX, randomY), hRadius = case size of
+            Small -> sAsteroidSize / 2
+            Medium -> mAsteroidSize / 2
+            Large -> lAsteroidSize / 2
+      },
+        aVelocity = (20, 20),
+        aExploding = False,
+        aSize = size
+    }
 
+addAsteroid :: Asteroid -> [Asteroid] -> [Asteroid]
+addAsteroid asteroid asteroids = asteroid : asteroids
+
+-- bullet
 data Bullet = MkBullet {
     bHitBox :: HitBox, 
     bVelocity :: Data.Vector, 
     bLifeTime :: LifeTime
 }
 
-data UFO = MkUFO {
+initBullet :: Bullet --not yet correct, random values assigned
+initBullet = MkBullet {
+    bHitBox = MkHitBox { hPosition = (0,0), hRadius = 0.05},
+    bVelocity = (100, 100),
+    bLifeTime = 1
+}
+
+addBullet :: Bullet -> [Bullet] -> [Bullet]
+addBullet bullet bullets = bullet : bullets
+
+-- ufo
+data UFO = MkUfo {
+    uSkin :: IO Picture,
     uHitBox :: HitBox, 
     uVelocity :: Data.Vector, 
     uExploding :: Exploding
 }
+
+initUfo :: IO UFO
+initUfo = do
+    randomX <- randomRIO (windowMinX, windowMaxX)
+    randomY <- randomRIO (windowMinY, windowMaxY)
+    return MkUfo {
+        uSkin = Data.loadBMP ufoBitmap,
+        uHitBox = MkHitBox { hPosition = (randomX, randomY), hRadius = ufoSize / 2 },
+        uVelocity = (30, 30),
+        uExploding = False
+    }
+
+addUfo :: UFO -> [UFO] -> [UFO]
+addUfo ufo ufos = ufo : ufos
 
 -- general game state
 type Paused = Bool
@@ -91,17 +125,23 @@ loadHighScores _ = []
 -- player input
 data KeyBoard = Up | Down | Left | Right | Space | Pause | None
 
-initialState :: GameState
-initialState = MkGameState {
-    gsSpaceship = initSpaceShip,
-    gsAsteroids = [initAsteroid Small, initAsteroid Medium, initAsteroid Large],
-    gsUfos = [],
-    gsBullets = [],
-    gsScore = 0,
-    gsHighScores = loadHighScores "file_name.json",
-    gsKeyboard = None,
-    gsIsPaused = False
-}
+initialState :: IO GameState
+initialState = do
+    randomSmallAsteroid  <- initAsteroid Small
+    randomMediumAsteroid <- initAsteroid Medium
+    randomLargeAsteroid  <- initAsteroid Large
+    randomUfo            <- initUfo
+
+    return MkGameState {
+        gsSpaceship = initSpaceShip,
+        gsAsteroids = [randomSmallAsteroid, randomMediumAsteroid, randomLargeAsteroid],
+        gsUfos = [randomUfo],
+        gsBullets = [],
+        gsScore = 0,
+        gsHighScores = loadHighScores "file_name.json",
+        gsKeyboard = None,
+        gsIsPaused = False
+    }
 
 data GameState = MkGameState {
     gsSpaceship  :: Spaceship,

@@ -11,10 +11,11 @@ import Auxiliary.Constants
 import Graphics.Gloss.Interface.IO.Game
 
 main :: IO ()
-main = playIO (InWindow "Counter" (windowWidth, windowHeight) (0, 0)) -- Or FullScreen
-              black            -- Background color
-              framesPerSecond  -- Frames per second
-              initialState     -- Initial state
-              view             -- View function
-              input            -- Event function
-              step             -- Step function
+main = initialState >>= \initialGameState ->
+       playIO (InWindow "Asteroids" (windowWidth, windowHeight) (0, 0))
+              black
+              framesPerSecond
+              initialGameState
+              view
+              input
+              step

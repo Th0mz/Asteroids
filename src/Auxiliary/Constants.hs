@@ -42,16 +42,22 @@ sAsteroidBitmap :: String
 sAsteroidBitmap = bitmapPaths ++ "/sAsteroidSkin.bmp"
 
 sAsteroidSize :: Float
-sAsteroidSize = 40
+sAsteroidSize = 30
 
 mAsteroidBitmap :: String
 mAsteroidBitmap = bitmapPaths ++ "/mAsteroidSkin.bmp"
 
 mAsteroidSize :: Float
-mAsteroidSize = 70
+mAsteroidSize = 60
 
 lAsteroidBitmap :: String
 lAsteroidBitmap = bitmapPaths ++ "/lAsteroidSkin.bmp"
 
 lAsteroidSize :: Float
 lAsteroidSize = 100
+
+ufoBitmap :: String
+ufoBitmap = bitmapPaths ++ "/ufoSkin.bmp"
+
+ufoSize :: Float
+ufoSize = 60

@@ -6,10 +6,18 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import System.Random
 import Spaceship
+import Asteroid
+import UFO
+import Auxiliary.Operations
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
-step secs gameState = return $ stepSpaceShip secs gameState
+step secs gameState = do
+    return updatedUFOState
+  where
+    updatedSpaceshipState = stepSpaceShip secs gameState
+    updatedAsteroidState = stepAsteroid secs updatedSpaceshipState
+    updatedUFOState = stepUfo secs updatedAsteroidState
 
 --step secs gstate
 --  | elapsedTime gstate + secs > nO_SECS_BETWEEN_CYCLES
@@ -33,3 +41,24 @@ inputKey :: Event -> GameState -> GameState
 -- inputKey _ gstate = gstate -- Otherwise keep the 
 inputKey = undefined
 
+-- shooting
+shootBulletFromUfo :: GameState -> GameState
+shootBulletFromUfo = undefined
+
+shootBulletFromSpaceship :: GameState -> GameState
+shootBulletFromSpaceship = undefined
+
+-- exploding (creates 2 smaller asteroids when one is shot)
+explodeAsteroid :: Asteroid -> [Asteroid]
+explodeAsteroid asteroid
+    | aExploding asteroid = case aSize asteroid of
+        Large -> []--[randomMediumAsteroid, randomMediumAsteroid] 
+        Medium -> []--[randomSmallAsteroid, randomSmallAsteroid]
+        Small -> []
+    | otherwise = [asteroid]
+    where
+        createExplodedAsteroid newSize = asteroid {
+            aHitBox = (aHitBox asteroid) { hPosition = (0,0)},--aHitBox asteroid },
+            aVelocity = (40, 40),
+            aSize = newSize
+        }
