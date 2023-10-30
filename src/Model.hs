@@ -23,6 +23,7 @@ data Spaceship = MkSpaceship {
     sSkin :: IO Picture,
     sLives :: Lives,
     sHitBox :: HitBox, 
+    sDirection :: Data.Vector,
     sVelocity :: Data.Vector,
     sAcceleration :: Data.Vector,
     sExploding :: Exploding 
@@ -32,8 +33,9 @@ initSpaceShip :: Spaceship
 initSpaceShip = MkSpaceship {
     sSkin = Data.loadBMP spaceshipBitmap,
     sLives = 3,
-    sHitBox = MkHitBox {hPosition = (0, 0), hRadius = spaceshipSize / 2},
-    sVelocity = (50, 40),
+    sHitBox = MkHitBox {hPosition = (100, 100), hRadius = spaceshipSize / 2},
+    sDirection = (-1, 1),
+    sVelocity = (20, -40),
     sAcceleration = (0, 0),
     sExploding = False
 }
@@ -123,7 +125,7 @@ loadHighScores :: String -> HighScores
 loadHighScores _ = [] 
 
 -- player input
-data KeyBoard = Up | Down | Left | Right | Space | Pause | None
+data KeyBoard = KBup | KBleft | KBright | KBspace | KBpause | KBnone
 
 initialState :: IO GameState
 initialState = do
@@ -139,7 +141,7 @@ initialState = do
         gsBullets = [],
         gsScore = 0,
         gsHighScores = loadHighScores "file_name.json",
-        gsKeyboard = None,
+        gsKeyboard = KBnone,
         gsIsPaused = False
     }
 

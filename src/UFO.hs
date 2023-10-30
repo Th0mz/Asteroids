@@ -59,3 +59,6 @@ moveUfo delta ufos = map moveSingleUfo ufos
 calcUfoSpaceshipPos :: Spaceship -> UFO -> Float -> Point
 calcUfoSpaceshipPos spaceship ufo delta = 
   translatePos delta (hPosition (sHitBox spaceship)) (uVelocity ufo)
+
+shootBulletFromUfo :: GameState -> GameState
+shootBulletFromUfo = undefined

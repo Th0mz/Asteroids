@@ -3,15 +3,11 @@ module Asteroid where
 
 import Graphics.Gloss (white, circle, color, Picture (Translate), Point, Vector, translate)
 import qualified Graphics.Gloss as Data (Point, Vector, BitmapData)
-import Model ( Asteroid (MkAsteroid, aSkin, aHitBox, aVelocity, aExploding, aSize),
-               HitBox (MkHitBox, hPosition, hRadius),
-               GameState (MkGameState, gsAsteroids)
-               )
+import Model
 
 import GHC.Num.BigNat (raiseDivZero_BigNat)
 import Auxiliary.Operations
 import Auxiliary.Constants
-import System.Random
 
 -- ------------------------------------ --
 --              V I E W                 --
@@ -30,7 +26,7 @@ renderAsteroid asteroid = do
     let (x, y) = hPosition hitBox
     skin <- aSkin asteroid
     return $ translate x y skin
-    where 
+    where
         hitBox = aHitBox asteroid
 
 -- ------------------------------------ --
@@ -56,3 +52,18 @@ moveAsteroid delta asteroids = map moveSingleAsteroid asteroids
         hitBox = aHitBox asteroid
         velocity = aVelocity asteroid
         newHitBox = moveHitBox delta velocity hitBox
+
+-- exploding (creates 2 smaller asteroids when one is shot)
+explodeAsteroid :: Asteroid -> [Asteroid]
+explodeAsteroid asteroid
+    | aExploding asteroid = case aSize asteroid of
+        Large -> []--[randomMediumAsteroid, randomMediumAsteroid] 
+        Medium -> []--[randomSmallAsteroid, randomSmallAsteroid]
+        Small -> []
+    | otherwise = [asteroid]
+    where
+        createExplodedAsteroid newSize = asteroid {
+            aHitBox = (aHitBox asteroid) { hPosition = (0,0)},--aHitBox asteroid },
+            aVelocity = (40, 40),
+            aSize = newSize
+        }

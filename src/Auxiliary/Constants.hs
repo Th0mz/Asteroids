@@ -61,3 +61,10 @@ ufoBitmap = bitmapPaths ++ "/ufoSkin.bmp"
 
 ufoSize :: Float
 ufoSize = 60
+
+
+-- ---------------------------- --
+--      S P A C E S H I P       --
+-- ---------------------------- --
+spaceshipRotationSpeed :: Float
+spaceshipRotationSpeed = 4

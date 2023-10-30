@@ -12,53 +12,25 @@ import Auxiliary.Operations
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
-step secs gameState = do
-    return updatedUFOState
-  where
-    updatedSpaceshipState = stepSpaceShip secs gameState
-    updatedAsteroidState = stepAsteroid secs updatedSpaceshipState
-    updatedUFOState = stepUfo secs updatedAsteroidState
-
---step secs gstate
---  | elapsedTime gstate + secs > nO_SECS_BETWEEN_CYCLES
---  = -- We show a new random number
---    do randomNumber <- randomIO
---       let newNumber = abs randomNumber `mod` 10
---       return $ GameState (ShowANumber newNumber) 0
---  | otherwise
---  = -- Just update the elapsed time
---    return $ gstate { elapsedTime = elapsedTime gstate + secs }
+step secs = return
+            . stepUfo secs
+            . stepAsteroid secs
+            . stepSpaceShip secs
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
---input e gstate = return (inputKey e gstate)
-input _ = return
+input event gameState = return $
+                        gameState {gsKeyboard = toKeyboardKey event}
 
-inputKey :: Event -> GameState -> GameState
--- inputKey (EventKey (Char c) _ _ _) gstate
---   = -- If the user presses a character key, show that one
---     gstate { infoToShow = ShowAChar c }
--- inputKey _ gstate = gstate -- Otherwise keep the 
-inputKey = undefined
+toKeyboardKey :: Event -> KeyBoard
+toKeyboardKey (EventKey k Down _ _) =
+    case k of
+        SpecialKey KeyUp    -> KBup    -- up key
+        SpecialKey KeyLeft  -> KBleft  -- left key
+        SpecialKey KeyRight -> KBright -- right key
+        SpecialKey KeySpace -> KBspace -- space bar
+        Char 'p'            -> KBpause -- p key
+        _                   -> KBnone  -- key not recognized
 
--- shooting
-shootBulletFromUfo :: GameState -> GameState
-shootBulletFromUfo = undefined
-
-shootBulletFromSpaceship :: GameState -> GameState
-shootBulletFromSpaceship = undefined
-
--- exploding (creates 2 smaller asteroids when one is shot)
-explodeAsteroid :: Asteroid -> [Asteroid]
-explodeAsteroid asteroid
-    | aExploding asteroid = case aSize asteroid of
-        Large -> []--[randomMediumAsteroid, randomMediumAsteroid] 
-        Medium -> []--[randomSmallAsteroid, randomSmallAsteroid]
-        Small -> []
-    | otherwise = [asteroid]
-    where
-        createExplodedAsteroid newSize = asteroid {
-            aHitBox = (aHitBox asteroid) { hPosition = (0,0)},--aHitBox asteroid },
-            aVelocity = (40, 40),
-            aSize = newSize
-        }
+-- key released
+toKeyboardKey _ = KBnone
