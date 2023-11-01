@@ -18,6 +18,7 @@ executable my-gloss
                      , Asteroid
                      , UFO
                      , Model
+                     , Bullet
                      , View
                      , Auxiliary.Constants
                      , Auxiliary.Operations
