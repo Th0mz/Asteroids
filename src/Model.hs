@@ -33,9 +33,9 @@ initSpaceShip :: Spaceship
 initSpaceShip = MkSpaceship {
     sSkin = Data.loadBMP spaceshipBitmap,
     sLives = 3,
-    sHitBox = MkHitBox {hPosition = (100, 100), hRadius = spaceshipSize / 2},
-    sDirection = (-1, 1),
-    sVelocity = (20, -40),
+    sHitBox = MkHitBox {hPosition = (0, 0), hRadius = spaceshipSize / 2},
+    sDirection = (0, 1),
+    sVelocity = (0, 0),
     sAcceleration = (0, 0),
     sExploding = False
 }

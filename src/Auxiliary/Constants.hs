@@ -68,3 +68,6 @@ ufoSize = 60
 -- ---------------------------- --
 spaceshipRotationSpeed :: Float
 spaceshipRotationSpeed = 4
+
+spaceshipMaxSpeed :: Float
+spaceshipMaxSpeed = 100
