@@ -6,22 +6,28 @@ import Model
 import Asteroid
 import Spaceship
 import UFO
+import Bullet (renderBullet)
     -- ( GameState(infoToShow),
     --  InfoToShow(ShowAChar, ShowNothing, ShowANumber))
 
 view :: GameState -> IO Picture
 view gameState = do
-    spaceshipPicture   <- renderSpaceship (gsSpaceship gameState)
-    spaceshipPictureHB <- renderSpaceshipHB (gsSpaceship gameState)
-    asteroidPictures   <- mapM renderAsteroid (gsAsteroids gameState)
+    spaceshipPicture   <- renderSpaceship       (gsSpaceship gameState)
+    spaceshipPictureHB <- renderSpaceshipHB     (gsSpaceship gameState)
+    asteroidPictures   <- mapM renderAsteroid   (gsAsteroids gameState)
     asteroidPicturesHB <- mapM renderAsteroidHB (gsAsteroids gameState)
-    ufoPictures   <- mapM renderUfo (gsUfos gameState)
-    ufoPicturesHB <- mapM renderUfoHB (gsUfos gameState)
+    ufoPictures        <- mapM renderUfo        (gsUfos gameState)
+    ufoPicturesHB      <- mapM renderUfoHB      (gsUfos gameState)
+    bulletPictures     <- mapM renderBullet     (gsBullets gameState)
    
     return $ Pictures $
-        [spaceshipPicture, spaceshipPictureHB] 
-        ++ asteroidPictures ++ asteroidPicturesHB
-        ++ ufoPictures ++ ufoPicturesHB
+        [  spaceshipPicture, 
+           spaceshipPictureHB ] 
+        ++ asteroidPictures
+        ++ asteroidPicturesHB
+        ++ ufoPictures
+        ++ ufoPicturesHB
+        ++ bulletPictures
     
 viewPure :: GameState -> Picture
 -- viewPure gsate = case infoToShow gstate of

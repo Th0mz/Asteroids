@@ -9,10 +9,12 @@ import Spaceship
 import Asteroid
 import UFO
 import Auxiliary.Operations
+import Bullet (stepBullets)
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
 step secs = return
+            . stepBullets secs
             . stepUfo secs
             . stepAsteroid secs
             . stepSpaceShip secs

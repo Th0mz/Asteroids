@@ -36,6 +36,8 @@ renderUfo ufo = do
 --         C O N T R O L L E R          --
 -- ------------------------------------ --
 
+-- TODO : spawnUFO
+
 stepUfo :: Float -> GameState -> GameState
 stepUfo delta gameState@(MkGameState {gsUfos = ufos}) =
     gameState {gsUfos = newUfos}

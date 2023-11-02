@@ -18,6 +18,9 @@ moveHitBox delta velocity hitBox =
 translatePos :: Float -> Point -> Vector -> Point
 translatePos delta (x, y) (vX, vY) = (x + vX * delta, y + vY * delta)
 
+translatePoint :: Point -> Vector -> Point
+translatePoint (x, y) (vX, vY) = (x + vX, y + vY)
+
 wrapAroundPos :: Float -> Point -> Point
 wrapAroundPos slack (x, y) = (wrapAroundCoord x windowMinX windowMaxX, wrapAroundCoord y windowMinY windowMaxY)
     where 

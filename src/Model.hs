@@ -81,7 +81,7 @@ data Bullet = MkBullet {
 
 initBullet :: Bullet --not yet correct, random values assigned
 initBullet = MkBullet {
-    bHitBox = MkHitBox { hPosition = (0,0), hRadius = 0.05},
+    bHitBox = MkHitBox { hPosition = (0,0), hRadius = 1},
     bVelocity = (100, 100),
     bLifeTime = 1
 }

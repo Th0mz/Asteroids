@@ -33,6 +33,8 @@ renderAsteroid asteroid = do
 --         C O N T R O L L E R          --
 -- ------------------------------------ --
 
+-- TODO : spawnAsteroid
+
 stepAsteroid :: Float -> GameState -> GameState
 stepAsteroid delta gameState@(MkGameState {gsAsteroids = asteroids}) =
     gameState {gsAsteroids = newAsteroids}
