@@ -5,6 +5,14 @@ import Graphics.Gloss
 import Auxiliary.Constants
 import Graphics.Gloss.Data.Vector
 import Auxiliary.Operations
+import Hitbox
+
+------------------------------------------
+--          C O L L I D A B L E         --
+------------------------------------------
+instance Collidable Bullet where
+    getHitBox = bHitBox 
+    collided = undefined
 
 -- ------------------------------------ --
 --              V I E W                 --
@@ -12,7 +20,7 @@ import Auxiliary.Operations
 
 renderBullet :: Bullet -> IO Picture
 renderBullet bullet = 
-    return $
+    return $ 
     Translate x y $ 
     color white (circle radius)
     where 

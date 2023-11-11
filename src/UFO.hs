@@ -5,12 +5,20 @@ import Graphics.Gloss ( white, circle, color, Picture (Translate), Point, Vector
 import Model ( UFO (MkUfo, uHitBox, uVelocity, uSkin),
                Spaceship (MkSpaceship, sHitBox, sVelocity, sSkin),
                HitBox (MkHitBox, hPosition, hRadius),
-               GameState (MkGameState, gsUfos)
+               GameState (MkGameState, gsUfos), Collidable (..)
 
              )
 import GHC.Num.BigNat (raiseDivZero_BigNat)
 import Auxiliary.Operations
 import Spaceship
+import Hitbox
+
+------------------------------------------
+--          C O L L I D A B L E         --
+------------------------------------------
+instance Collidable UFO where
+    getHitBox = uHitBox 
+    collided = undefined
 
 -- ------------------------------------ --
 --              V I E W                 --

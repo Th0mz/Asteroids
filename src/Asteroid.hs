@@ -8,6 +8,14 @@ import Model
 import GHC.Num.BigNat (raiseDivZero_BigNat)
 import Auxiliary.Operations
 import Auxiliary.Constants
+import Hitbox
+
+------------------------------------------
+--          C O L L I D A B L E         --
+------------------------------------------
+instance Collidable Asteroid where
+    getHitBox = aHitBox 
+    collided = undefined
 
 -- ------------------------------------ --
 --              V I E W                 --

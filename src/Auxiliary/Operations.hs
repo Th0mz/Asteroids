@@ -4,16 +4,6 @@ import Graphics.Gloss
 import Model
 import Auxiliary.Constants
 
-
--- hitBox operations
-moveHitBox :: Float -> Vector -> HitBox -> HitBox
-moveHitBox delta velocity hitBox = 
-    hitBox {hPosition = newPosition}
-    where 
-        position = hPosition hitBox
-        radius = hRadius hitBox
-        newPosition = wrapAroundPos radius $ translatePos delta position velocity
-
 -- vector operations
 translatePos :: Float -> Point -> Vector -> Point
 translatePos delta (x, y) (vX, vY) = (x + vX * delta, y + vY * delta)

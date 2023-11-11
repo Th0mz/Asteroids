@@ -3,14 +3,35 @@ module Model where
 import qualified Graphics.Gloss as Data (Point, Vector, loadBMP)
 import GHC.Generics (UDouble)
 import Data.Data (ConstrRep(FloatConstr))
-import Graphics.Gloss (Picture)
+import Graphics.Gloss (Picture, Point)
 import System.Random
 import Auxiliary.Constants
+import qualified Data.Set as S
 
 -- properties
 type Radius = Float
 type LifeTime = Float
 type Exploding = Bool
+
+-- point operations
+pDistance :: Point -> Point -> Float
+pDistance (x, y) (x', y') = sqrt $ (x' - x) ** 2 + (y' - y) ** 2
+
+class Collidable a where
+    getHitBox   :: a -> HitBox  
+    collided    :: a -> GameState -> GameState
+    isColliding :: Collidable b => a -> b -> Bool
+    isColliding x y = pDistance posX posY < rX + rY
+        where 
+            -- x object information 
+            hitBoxX = getHitBox x
+            posX = hPosition hitBoxX
+            rX = hRadius hitBoxX
+            -- y object information
+            hitBoxY = getHitBox y
+            posY = hPosition hitBoxY
+            rY = hRadius hitBoxY
+
 
 data HitBox = MkHitBox {
     hPosition :: Data.Point,
@@ -125,7 +146,10 @@ loadHighScores :: String -> HighScores
 loadHighScores _ = [] 
 
 -- player input
+type Keys = S.Set KeyBoard
 data KeyBoard = KBup | KBleft | KBright | KBspace | KBpause | KBnone
+    deriving (Eq, Ord)
+
 
 initialState :: IO GameState
 initialState = do
@@ -141,7 +165,7 @@ initialState = do
         gsBullets = [],
         gsScore = 0,
         gsHighScores = loadHighScores "file_name.json",
-        gsKeyboard = KBnone,
+        gsKeys = S.empty,
         gsIsPaused = False
     }
 
@@ -152,6 +176,6 @@ data GameState = MkGameState {
     gsBullets    :: [Bullet],
     gsScore      :: Score,
     gsHighScores :: [HSEntry],
-    gsKeyboard   :: KeyBoard,
+    gsKeys       :: Keys,
     gsIsPaused   :: Paused
 }

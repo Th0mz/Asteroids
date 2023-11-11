@@ -10,6 +10,9 @@ import Asteroid
 import UFO
 import Auxiliary.Operations
 import Bullet (stepBullets)
+import Graphics.Gloss.Interface.IO.Game (Event(EventKey))
+import qualified Data.Set as S
+
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
@@ -21,11 +24,19 @@ step secs = return
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
-input event gameState = return $
-                        gameState {gsKeyboard = toKeyboardKey event}
+input event@(EventKey _ state _ _) gameState = 
+    case toKeyboardKey event of
+        KBnone -> return gameState
+        key    -> case state of 
+            Down -> return $ gameState {gsKeys = S.insert key (gsKeys gameState)} 
+            Up   -> return $ gameState {gsKeys = S.delete key (gsKeys gameState)}
+
+input _ gameState = return gameState 
+
+
 
 toKeyboardKey :: Event -> KeyBoard
-toKeyboardKey (EventKey k Down _ _) =
+toKeyboardKey (EventKey k _ _ _) =
     case k of
         SpecialKey KeyUp    -> KBup    -- up key
         SpecialKey KeyLeft  -> KBleft  -- left key

@@ -4,8 +4,7 @@ module Spaceship where
 import Graphics.Gloss ( white, circle, color, Picture (Translate, Rotate, Color), Point, Vector, translate, red, line )
 import Model ( Spaceship (MkSpaceship, sHitBox, sVelocity, sSkin, sDirection),
                HitBox (MkHitBox, hPosition, hRadius),
-               GameState (MkGameState, gsSpaceship, gsKeyboard), KeyBoard (KBup, KBleft, KBright, KBspace)
-
+               GameState (MkGameState, gsSpaceship, gsKeys), Keys, KeyBoard (KBup, KBleft, KBright, KBspace), Collidable (..)
              )
 import GHC.Num.BigNat (raiseDivZero_BigNat)
 import Auxiliary.Operations
@@ -13,6 +12,18 @@ import Graphics.Gloss.Geometry.Angle (radToDeg)
 import Graphics.Gloss.Data.Vector (argV, rotateV, mulSV)
 import Auxiliary.Constants (spaceshipBitmap, spaceshipRotationSpeed, spaceshipMaxSpeed, spaceshipSize)
 import Bullet (spawnBullet)
+import Hitbox
+
+import qualified Data.Set as S
+
+
+
+------------------------------------------
+--          C O L L I D A B L E         --
+------------------------------------------
+instance Collidable Spaceship where
+    getHitBox = sHitBox 
+    collided = undefined
 
 -- ------------------------------------ --
 --              V I E W                 --
@@ -52,13 +63,13 @@ renderSpaceship spaceship = do
 --         C O N T R O L L E R          --
 -- ------------------------------------ --
 stepSpaceShip :: Float -> GameState -> GameState
-stepSpaceShip delta gameState@(MkGameState {gsSpaceship = spaceship, gsKeyboard = keyboard}) = 
+stepSpaceShip delta gameState@(MkGameState {gsSpaceship = spaceship, gsKeys = keys}) = 
     -- shoot bullet from updated gameState if the space key is pressed 
-    shootBulletFromSpaceship keyboard $
+    shootBulletFromSpaceship keys $
     -- update game state
     gameState {gsSpaceship = moveSpaceShip delta
-                           $ updateVelocity delta keyboard  
-                           $ rotateSpaceShip delta keyboard spaceship
+                           $ updateVelocity delta keys  
+                           $ rotateSpaceShip delta keys spaceship
               }
 
 moveSpaceShip :: Float -> Spaceship -> Spaceship
@@ -69,31 +80,28 @@ moveSpaceShip delta spaceship =
         velocity = sVelocity spaceship
 
 -- TODO : use acceleration to give a notion of space physics
-updateVelocity :: Float -> KeyBoard -> Spaceship -> Spaceship
-updateVelocity delta keyboard spaceship =
-    case keyboard of
-        KBup -> spaceship {sVelocity = mulSV spaceshipMaxSpeed direction}
-        _    -> spaceship {sVelocity = (0, 0)}
+updateVelocity :: Float -> Keys -> Spaceship -> Spaceship
+updateVelocity delta keys spaceship
+    | S.member KBup keys = spaceship {sVelocity = mulSV spaceshipMaxSpeed direction}
+    | otherwise          = spaceship {sVelocity = (0, 0)}  
     where 
         direction = sDirection spaceship
 
 
-rotateSpaceShip :: Float -> KeyBoard -> Spaceship -> Spaceship
-rotateSpaceShip delta keyboard spaceship = 
-    case keyboard of 
-        KBleft  -> spaceship {sDirection = rotateV    rotationDelta  currDirection}
-        KBright -> spaceship {sDirection = rotateV (- rotationDelta) currDirection} 
-        _       -> spaceship
+rotateSpaceShip :: Float -> Keys -> Spaceship -> Spaceship
+rotateSpaceShip delta keys spaceship  
+    | S.member KBleft  keys = spaceship {sDirection = rotateV    rotationDelta  currDirection}
+    | S.member KBright keys = spaceship {sDirection = rotateV (- rotationDelta) currDirection}
+    | otherwise             = spaceship
     where 
         currDirection = sDirection spaceship
         rotationDelta = spaceshipRotationSpeed * delta
 
-shootBulletFromSpaceship :: KeyBoard -> GameState -> GameState
-shootBulletFromSpaceship KBspace gameState@(MkGameState {gsSpaceship = spaceship}) = 
-    spawnBullet position direction gameState
+shootBulletFromSpaceship :: Keys -> GameState -> GameState
+shootBulletFromSpaceship keys gameState@(MkGameState {gsSpaceship = spaceship}) 
+    | S.member KBspace keys = spawnBullet position direction gameState
+    | otherwise             = gameState
     where
         sPosition = hPosition $ sHitBox spaceship
         direction =  sDirection spaceship
         position = translatePoint sPosition (mulSV (spaceshipSize + 10) direction)
-
-shootBulletFromSpaceship _       gameState = gameState
