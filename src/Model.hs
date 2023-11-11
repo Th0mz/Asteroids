@@ -48,7 +48,6 @@ data Spaceship = MkSpaceship {
     sHitBox :: HitBox, 
     sDirection :: Data.Vector,
     sVelocity :: Data.Vector,
-    sAcceleration :: Data.Vector,
     sExploding :: Exploding 
 }
 
@@ -60,7 +59,6 @@ initSpaceShip = MkSpaceship {
     sHitBox = MkHitBox {hPosition = (0, 0), hRadius = spaceshipSize / 2},
     sDirection = (0, 1),
     sVelocity = (0, 0),
-    sAcceleration = (0, 0),
     sExploding = False
 }
 

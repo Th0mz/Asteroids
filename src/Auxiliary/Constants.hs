@@ -69,11 +69,21 @@ ufoSize = 60
 spaceshipRotationSpeed :: Float
 spaceshipRotationSpeed = 4
 
+spaceshipAcceleration :: Float
+spaceshipAcceleration = 100
+
+
+-- friction coefficient 
+--    0 => no friction
+--    1 => max friction 
+spaceshipFriction :: Float
+spaceshipFriction = 0.7
+
 spaceshipMaxSpeed :: Float
-spaceshipMaxSpeed = 100
+spaceshipMaxSpeed = 300
 
 shootingCoolDown :: Float 
-shootingCoolDown = 0.1
+shootingCoolDown = 0.2
 
 -- ---------------------------- --
 --        B U L L E T           --
@@ -82,7 +92,7 @@ bulletRadius :: Float
 bulletRadius = 2
 
 bulletSpeed :: Float
-bulletSpeed = 600
+bulletSpeed = 400
 
 bulletLifetime :: Float
-bulletLifetime = 0.6
+bulletLifetime = 1

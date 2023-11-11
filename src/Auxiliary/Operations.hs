@@ -11,6 +11,12 @@ translatePos delta (x, y) (vX, vY) = (x + vX * delta, y + vY * delta)
 translatePoint :: Point -> Vector -> Point
 translatePoint (x, y) (vX, vY) = (x + vX, y + vY)
 
+addVectors :: Vector -> Vector -> Vector
+addVectors (vX, vY) (uX, uY) = (vX + uX, vY + uY)
+
+scaleVector :: Float -> Vector -> Vector
+scaleVector factor (vX, vY) = (vX - vX * factor, vY - vY * factor)
+
 wrapAroundPos :: Float -> Point -> Point
 wrapAroundPos slack (x, y) = (wrapAroundCoord x windowMinX windowMaxX, wrapAroundCoord y windowMinY windowMaxY)
     where 

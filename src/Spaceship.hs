@@ -9,8 +9,8 @@ import Model ( Spaceship (MkSpaceship, sHitBox, sVelocity, sSkin, sDirection, sC
 import GHC.Num.BigNat (raiseDivZero_BigNat)
 import Auxiliary.Operations
 import Graphics.Gloss.Geometry.Angle (radToDeg)
-import Graphics.Gloss.Data.Vector (argV, rotateV, mulSV)
-import Auxiliary.Constants (spaceshipBitmap, spaceshipRotationSpeed, spaceshipMaxSpeed, spaceshipSize, shootingCoolDown)
+import Graphics.Gloss.Data.Vector (argV, rotateV, mulSV, normalizeV)
+import Auxiliary.Constants (spaceshipBitmap, spaceshipRotationSpeed, spaceshipMaxSpeed, spaceshipSize, shootingCoolDown, spaceshipAcceleration, spaceshipFriction)
 import Bullet (spawnBullet)
 import Hitbox
 
@@ -80,13 +80,15 @@ moveSpaceShip delta spaceship =
         hitBox = sHitBox spaceship
         velocity = sVelocity spaceship
 
--- TODO : use acceleration to give a notion of space physics
 updateVelocity :: Float -> Keys -> Spaceship -> Spaceship
 updateVelocity delta keys spaceship
-    | S.member KBup keys = spaceship {sVelocity = mulSV spaceshipMaxSpeed direction}
-    | otherwise          = spaceship {sVelocity = (0, 0)}  
+    -- apply acceleration thrust to velocity
+    | S.member KBup keys = spaceship {sVelocity = addVectors (sVelocity spaceship) acceleration}
+    -- apply friction
+    | otherwise          = spaceship {sVelocity = scaleVector (spaceshipFriction * delta) (sVelocity spaceship)}
     where 
         direction = sDirection spaceship
+        acceleration = mulSV (spaceshipAcceleration * delta) (normalizeV direction) 
 
 updateCooldown :: Float -> Spaceship -> Spaceship
 updateCooldown delta spaceship = spaceship {sCooldown = sCooldown spaceship - delta}
@@ -111,7 +113,7 @@ shootBulletFromSpaceship keys gameState@(MkGameState {gsSpaceship = spaceship})
     where
         sPosition = hPosition $ sHitBox spaceship
         direction =  sDirection spaceship
-        position = translatePoint sPosition (mulSV (spaceshipSize + 10) direction)
+        position = translatePoint sPosition (mulSV ((spaceshipSize / 2) + 5) direction)
         
         canShoot :: Spaceship -> Bool
         canShoot spaceship = sCooldown spaceship <= 0
