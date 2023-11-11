@@ -46,7 +46,11 @@ spawnBullet position direction gameState =
 -- bullet garbage collector must be done here
 stepBullets :: Float -> GameState -> GameState
 stepBullets delta gameState@(MkGameState {gsBullets = bullets}) =
-    gameState {gsBullets = map (moveBullet delta) bullets}
+    gameState {gsBullets = filter isBulletAlive 
+                 (map (updateBulletLifeTime delta 
+                     . moveBullet delta) 
+                  bullets)
+               }
 
 moveBullet :: Float -> Bullet -> Bullet
 moveBullet delta bullet = 
@@ -55,6 +59,10 @@ moveBullet delta bullet =
         hitBox = bHitBox bullet
         velocity = bVelocity bullet
 
-isBulletAlive :: Bullet -> Maybe Bullet
-isBulletAlive = undefined
+updateBulletLifeTime :: Float -> Bullet -> Bullet
+updateBulletLifeTime delta bullet =
+    bullet {bLifeTime = bLifeTime bullet - delta}
+
+isBulletAlive :: Bullet -> Bool
+isBulletAlive bullet = bLifeTime bullet > 0
 

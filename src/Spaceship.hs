@@ -2,15 +2,15 @@
 module Spaceship where
 
 import Graphics.Gloss ( white, circle, color, Picture (Translate, Rotate, Color), Point, Vector, translate, red, line )
-import Model ( Spaceship (MkSpaceship, sHitBox, sVelocity, sSkin, sDirection),
+import Model ( Spaceship (MkSpaceship, sHitBox, sVelocity, sSkin, sDirection, sCooldown),
                HitBox (MkHitBox, hPosition, hRadius),
-               GameState (MkGameState, gsSpaceship, gsKeys), Keys, KeyBoard (KBup, KBleft, KBright, KBspace), Collidable (..)
+               GameState (MkGameState, gsSpaceship, gsKeys), Keys, KeyBoard (KBup, KBleft, KBright, KBspace), Cooldown, Collidable (..)
              )
 import GHC.Num.BigNat (raiseDivZero_BigNat)
 import Auxiliary.Operations
 import Graphics.Gloss.Geometry.Angle (radToDeg)
 import Graphics.Gloss.Data.Vector (argV, rotateV, mulSV)
-import Auxiliary.Constants (spaceshipBitmap, spaceshipRotationSpeed, spaceshipMaxSpeed, spaceshipSize)
+import Auxiliary.Constants (spaceshipBitmap, spaceshipRotationSpeed, spaceshipMaxSpeed, spaceshipSize, shootingCoolDown)
 import Bullet (spawnBullet)
 import Hitbox
 
@@ -68,6 +68,7 @@ stepSpaceShip delta gameState@(MkGameState {gsSpaceship = spaceship, gsKeys = ke
     shootBulletFromSpaceship keys $
     -- update game state
     gameState {gsSpaceship = moveSpaceShip delta
+                           $ updateCooldown delta
                            $ updateVelocity delta keys  
                            $ rotateSpaceShip delta keys spaceship
               }
@@ -87,6 +88,9 @@ updateVelocity delta keys spaceship
     where 
         direction = sDirection spaceship
 
+updateCooldown :: Float -> Spaceship -> Spaceship
+updateCooldown delta spaceship = spaceship {sCooldown = sCooldown spaceship - delta}
+
 
 rotateSpaceShip :: Float -> Keys -> Spaceship -> Spaceship
 rotateSpaceShip delta keys spaceship  
@@ -97,11 +101,21 @@ rotateSpaceShip delta keys spaceship
         currDirection = sDirection spaceship
         rotationDelta = spaceshipRotationSpeed * delta
 
+
+
 shootBulletFromSpaceship :: Keys -> GameState -> GameState
 shootBulletFromSpaceship keys gameState@(MkGameState {gsSpaceship = spaceship}) 
-    | S.member KBspace keys = spawnBullet position direction gameState
-    | otherwise             = gameState
+    | S.member KBspace keys && canShoot spaceship 
+                = addShootingCooldown $ spawnBullet position direction gameState
+    | otherwise = gameState
     where
         sPosition = hPosition $ sHitBox spaceship
         direction =  sDirection spaceship
         position = translatePoint sPosition (mulSV (spaceshipSize + 10) direction)
+        
+        canShoot :: Spaceship -> Bool
+        canShoot spaceship = sCooldown spaceship <= 0
+
+        addShootingCooldown :: GameState -> GameState
+        addShootingCooldown gameState@(MkGameState {gsSpaceship = spaceship}) = 
+            gameState {gsSpaceship = spaceship {sCooldown = shootingCoolDown}}

@@ -12,6 +12,7 @@ import qualified Data.Set as S
 type Radius = Float
 type LifeTime = Float
 type Exploding = Bool
+type Cooldown = Float
 
 -- point operations
 pDistance :: Point -> Point -> Float
@@ -43,6 +44,7 @@ type Lives = Int
 data Spaceship = MkSpaceship {
     sSkin :: IO Picture,
     sLives :: Lives,
+    sCooldown :: Cooldown,
     sHitBox :: HitBox, 
     sDirection :: Data.Vector,
     sVelocity :: Data.Vector,
@@ -54,6 +56,7 @@ initSpaceShip :: Spaceship
 initSpaceShip = MkSpaceship {
     sSkin = Data.loadBMP spaceshipBitmap,
     sLives = 3,
+    sCooldown = 0,
     sHitBox = MkHitBox {hPosition = (0, 0), hRadius = spaceshipSize / 2},
     sDirection = (0, 1),
     sVelocity = (0, 0),
@@ -99,16 +102,6 @@ data Bullet = MkBullet {
     bVelocity :: Data.Vector, 
     bLifeTime :: LifeTime
 }
-
-initBullet :: Bullet --not yet correct, random values assigned
-initBullet = MkBullet {
-    bHitBox = MkHitBox { hPosition = (0,0), hRadius = 1},
-    bVelocity = (100, 100),
-    bLifeTime = 1
-}
-
-addBullet :: Bullet -> [Bullet] -> [Bullet]
-addBullet bullet bullets = bullet : bullets
 
 -- ufo
 data UFO = MkUfo {

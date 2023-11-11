@@ -4,7 +4,10 @@ import Graphics.Gloss
 import Model
 import Auxiliary.Operations
 
+checkCollisions :: GameState -> GameState
+checkCollisions = undefined
 
+-- auxiliary function
 moveHitBox :: Float -> Vector -> HitBox -> HitBox
 moveHitBox delta velocity hitBox = 
     hitBox {hPosition = newPosition}

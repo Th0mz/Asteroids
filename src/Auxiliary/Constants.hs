@@ -72,6 +72,9 @@ spaceshipRotationSpeed = 4
 spaceshipMaxSpeed :: Float
 spaceshipMaxSpeed = 100
 
+shootingCoolDown :: Float 
+shootingCoolDown = 0.1
+
 -- ---------------------------- --
 --        B U L L E T           --
 -- ---------------------------- --
@@ -79,7 +82,7 @@ bulletRadius :: Float
 bulletRadius = 2
 
 bulletSpeed :: Float
-bulletSpeed = 200
+bulletSpeed = 600
 
 bulletLifetime :: Float
-bulletLifetime = 100
+bulletLifetime = 0.6
