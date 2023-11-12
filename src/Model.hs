@@ -15,6 +15,7 @@ import qualified Data.Maybe
 import Data.Map (elemAt)
 import Graphics.Gloss.Data.Vector (normalizeV, mulSV)
 import Control.Concurrent (signalQSem)
+import System.IO
 
 -- properties
 type Radius = Float
@@ -257,7 +258,7 @@ getIdentifier gameState@(MkGameState {gsGlobalIdentifier = id}) =
 
 initialState :: IO GameState
 initialState = do
-    highScores           <- loadHighScores "high-scores.txt"
+    highScores           <- loadHighScores "./high-scores.txt"
 
     return MkGameState {
         gsScreen = Main,
