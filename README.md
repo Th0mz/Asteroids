@@ -11,3 +11,10 @@ Building upon the original concept, we're considering exciting additions, such a
     cabal update
     cabal run asteroids
     ```
+
+## Controls
+- `up arrow` : activate thrust
+- `left arrow / right arrow` : rotate spaceship
+- `spacebar` : shoot
+- `p` : pause
+other controls are indicated in the game
