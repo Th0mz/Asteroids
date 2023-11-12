@@ -38,6 +38,8 @@ class Collidable a where
             hitBoxY = getHitBox y
             posY = hPosition hitBoxY
             rY = hRadius hitBoxY
+    
+
 
 -- collidable instances
 instance Collidable Spaceship where
