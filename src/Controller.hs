@@ -56,14 +56,11 @@ pauseStep _ gameState@(MkGameState {gsKeys = keys, gsIsPaused = isPaused})
         | S.member    KBpause keys &&     isPaused = return $ gameState {gsScreen = Game}
         | otherwise = return gameState
 
----this does not work yet---
 highScoresStep :: Float -> GameState -> IO GameState
-highScoresStep _ = return  
---highScoresStep _ gameState = do
---    let highScores = undefined
---    let playerScore = undefined
---    let updatedHighScores = updateHighScores highScores playerScore
-
+highScoresStep _ gameState = do
+    highScores <- loadHighScores "high-scores.txt"
+    displayTopHighScores highScores
+    return gameState { gsScreen = HighScores }
 
 -- handle user input
 input :: Event -> GameState -> IO GameState
