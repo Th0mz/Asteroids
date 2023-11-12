@@ -39,7 +39,8 @@ addAsteroid gameState@(MkGameState { gsAsteroidSkinL = skin }) = do
             --  equal to the large asteroid base speed
             aVelocity = mulSV lAsteroidSpeed $ normalizeV (randDirX, randDirY),
             aCollided = False,
-            aSize = Large
+            aSize = Large,
+            aExploding = False
       } : gsAsteroids gameState'
     }
   where
@@ -74,7 +75,8 @@ renderAsteroid asteroid = do
 
 stepAsteroid :: Float -> GameState -> GameState
 stepAsteroid delta gameState@(MkGameState {gsAsteroids = asteroids}) =
-    gameState {gsAsteroids = newAsteroids}
+    -- TODO : maybe remove filter
+    gameState {gsAsteroids = filter (not . aExploding) newAsteroids}
     where
         newAsteroids = [newAsteroid asteroid | asteroid <- asteroids]
         newAsteroid asteroid = asteroid {aHitBox = newHitBox}

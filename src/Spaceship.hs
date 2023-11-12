@@ -2,7 +2,7 @@
 module Spaceship where
 
 import Graphics.Gloss ( white, circle, color, Picture (Translate, Rotate, Color), Point, Vector, translate, red, line )
-import Model ( Spaceship (MkSpaceship, sHitBox, sVelocity, sSkin, sDirection, sCooldown, sCollided, sLives, sId),
+import Model ( Spaceship (..),
                HitBox (MkHitBox, hPosition, hRadius),
                GameState (MkGameState, gsSpaceship, gsKeys, gsSpaceshipSkin), Keys, KeyBoard (KBup, KBleft, KBright, KBspace), Cooldown, Collidable (..), getIdentifier
              )
@@ -29,6 +29,7 @@ setupSpaceShip gameState@(MkGameState {gsSpaceshipSkin = skin}) = gameState' {
             sHitBox = MkHitBox {hPosition = (0, 0), hRadius = spaceshipSize / 2},
             sDirection = (0, 1),
             sVelocity = (0, 0),
+            sExploding = False,
             sCollided = False
         }
     }

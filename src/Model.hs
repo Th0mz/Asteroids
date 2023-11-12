@@ -13,12 +13,15 @@ import Data.List (elemIndex)
 import Data.Bits (Bits(xor))
 import qualified Data.Maybe
 import Data.Map (elemAt)
+import Graphics.Gloss.Data.Vector (normalizeV, mulSV)
+import Control.Concurrent (signalQSem)
 
 -- properties
 type Radius = Float
 type LifeTime = Float
 type Collided = Bool
 type Cooldown = Float
+type Exploding = Bool
 type Identifier = Int
 
 -- point operations
@@ -75,16 +78,71 @@ instance Collidable Asteroid where
     didCollide = aCollided
 
     afterCollision :: Asteroid -> GameState -> GameState
-    afterCollision _  = id
+    afterCollision asteroid gameState
+        | not (aCollided asteroid) && not (aExploding asteroid) =
+            gameState' {
+                gsAsteroids = updateElement asteroid asteroid { aCollided = True, aExploding = True } (gsAsteroids gameState'),
+                gsScore = gsScore gameState + asteroidScore asteroid
+            }
+        | otherwise = gameState
+        where
+            gameState' = splitAsteroid asteroid gameState
+
 
     removeCollieded :: Asteroid -> Asteroid
     removeCollieded asteroid = asteroid {aCollided = False}
 
 
+asteroidScore :: Asteroid -> Int
+asteroidScore MkAsteroid {aSize = size} =
+    case size of
+        Large  -> 100
+        Medium -> 250
+        Small  -> 500
+        _      -> 0
+
+splitAsteroid :: Asteroid -> GameState -> GameState
+splitAsteroid asteroid@(MkAsteroid {aSize = Small}) gameState = gameState
+splitAsteroid asteroid@(MkAsteroid {aHitBox = hitBox, aVelocity = vel@(vX, vY)}) gameState =
+    gameState'' {
+        gsAsteroids = asteroid1 : asteroid2 : gsAsteroids gameState''
+    }
+    where
+        (size, skin) = case aSize asteroid of
+            Large  -> (Medium, gsAsteroidSkinM gameState)
+            Medium -> (Small,  gsAsteroidSkinS gameState)
+        (id1, gameState') = getIdentifier gameState
+        asteroid1 = makeAsteroid id1 (hPosition hitBox) vel size skin
+
+        (id2, gameState'') = getIdentifier gameState
+        asteroid2 = makeAsteroid id2 (hPosition hitBox) (-vX, vY) size skin
+
+makeAsteroid :: Int -> Point -> Data.Vector -> Size -> IO Picture -> Asteroid
+makeAsteroid id pos vel size skin =
+    MkAsteroid {
+        aId = id,
+        aSkin = skin,
+        aHitBox = MkHitBox { hPosition = pos, hRadius = radius},
+        aVelocity = mulSV magnitude (normalizeV vel),
+        aCollided = False,
+        aExploding = False,
+        aSize = size
+    }
+    where
+        (radius, magnitude) = case size of
+            Medium -> (mAsteroidSize / 2, mAsteroidSpeed)
+            Small  -> (sAsteroidSize / 2, sAsteroidSpeed)
+            _      -> error "Impossible"
+
+
 instance Collidable UFO where
     getHitBox = uHitBox
     didCollide = uCollided
-    afterCollision = undefined
+
+    afterCollision :: UFO -> GameState -> GameState
+    afterCollision ufo gameState
+        | not $ uCollided ufo = gameState
+        | otherwise = gameState
 
     removeCollieded :: UFO -> UFO
     removeCollieded ufo = ufo {uCollided = False}
@@ -94,25 +152,24 @@ instance Collidable Bullet where
     didCollide = bCollided
 
     afterCollision :: Bullet -> GameState -> GameState
-    afterCollision bullet gameState@(MkGameState {gsBullets = bullets}) = 
-        gameState {
-            gsBullets = updateIndex index bullet { bLifeTime = 0 } bullets
-        }
+    afterCollision bullet gameState@(MkGameState {gsBullets = bullets})
+        | not $ bCollided bullet =
+            gameState {
+                gsBullets = updateElement bullet bullet { bLifeTime = 0 } bullets
+            }
+        | otherwise = gameState
         where
             index = case elemIndex bullet bullets of
                 Just i -> i
-                Nothing -> error "bullet not in bullets" 
-
-
-            
-
+                Nothing -> error "bullet not in bullets"
 
     removeCollieded :: Bullet -> Bullet
     removeCollieded bullet = bullet {bCollided = False}
 
-updateIndex :: Int -> a -> [a] -> [a]
-updateIndex i newVal lst =  take i lst ++ [newVal] ++ drop (i + 1) lst
-
+updateElement :: Eq a => a -> a -> [a] -> [a]
+updateElement oldVal newVal lst =  case elemIndex oldVal lst of
+    Just i -> take i lst ++ [newVal] ++ drop (i + 1) lst
+    Nothing -> lst
 
 data HitBox = MkHitBox {
     hPosition :: Data.Point,
@@ -128,6 +185,7 @@ data Spaceship = MkSpaceship {
     sHitBox :: HitBox,
     sDirection :: Data.Vector,
     sVelocity :: Data.Vector,
+    sExploding :: Exploding,
     sCollided :: Collided
 }
 
@@ -142,6 +200,7 @@ data Asteroid = MkAsteroid {
     aHitBox :: HitBox,
     aVelocity :: Data.Vector,
     aCollided :: Collided,
+    aExploding :: Exploding,
     aSize :: Size
 }
 
@@ -166,6 +225,7 @@ data UFO = MkUfo {
     uSkin :: IO Picture,
     uHitBox :: HitBox,
     uVelocity :: Data.Vector,
+    uExploding :: Exploding,
     uCollided :: Collided
 }
 
@@ -187,7 +247,7 @@ data KeyBoard = KBup | KBleft | KBright | KBspace | KBenter | KBpause | KBnone
 
 getIdentifier :: GameState -> (Identifier, GameState)
 getIdentifier gameState@(MkGameState {gsGlobalIdentifier = id}) =
-    (id, gameState {gsGlobalIdentifier = id + 1}) 
+    (id, gameState {gsGlobalIdentifier = id + 1})
 
 initialState :: IO GameState
 initialState = do
