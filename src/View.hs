@@ -20,7 +20,11 @@ view gameState@(MkGameState {gsScreen = screen}) =
 
 -- main screen view
 mainView :: GameState -> IO Picture
-mainView gameState = undefined
+mainView gameState = let
+    asteroidsTitle = Translate (-225) 0 $ Scale 0.7 0.7 $ Color white $ Text "ASTEROIDS"
+    instrText = Translate (-200) (-40) $ Scale 0.2 0.2 $ Color white $ Text "press 'enter' to start the game"
+
+    in return $ Pictures [asteroidsTitle, instrText]
 
 -- game screen view
 gameView :: GameState -> IO Picture
