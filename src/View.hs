@@ -12,7 +12,7 @@ import Bullet (renderBullet)
 
 view :: GameState -> IO Picture
 view gameState@(MkGameState {gsScreen = screen}) =
-    case screen of 
+    case screen of
         Main       -> mainView gameState
         Game       -> gameView gameState
         Pause      -> pauseView gameState
@@ -23,7 +23,7 @@ mainView :: GameState -> IO Picture
 mainView gameState = undefined
 
 -- game screen view
-gameView :: GameState -> IO Picture 
+gameView :: GameState -> IO Picture
 gameView gameState = do
     spaceshipPicture   <- renderSpaceship       (gsSpaceship gameState)
     spaceshipPictureHB <- renderSpaceshipHB     (gsSpaceship gameState)
@@ -32,10 +32,10 @@ gameView gameState = do
     ufoPictures        <- mapM renderUfo        (gsUfos gameState)
     ufoPicturesHB      <- mapM renderUfoHB      (gsUfos gameState)
     bulletPictures     <- mapM renderBullet     (gsBullets gameState)
-   
+
     return $ Pictures $
-        [  spaceshipPicture, 
-           spaceshipPictureHB ] 
+        [  spaceshipPicture,
+           spaceshipPictureHB ]
         ++ asteroidPictures
         ++ asteroidPicturesHB
         ++ ufoPictures
@@ -44,7 +44,11 @@ gameView gameState = do
 
 -- pause screen view
 pauseView :: GameState -> IO Picture
-pauseView = gameView
+pauseView gameState = do
+    game <- gameView gameState
+    let pauseText = Translate (-90) 0 $ Scale 0.5 0.5 $ Color white $ Text "Pause"
+        instrText = Translate (-200) (-40) $ Scale 0.2 0.2 $ Color white $ Text "press 'p' again to resume play"
+    return $ Pictures $ game : [pauseText, instrText]
 
 -- high scores view
 highScoresView :: GameState -> IO Picture
