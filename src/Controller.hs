@@ -5,6 +5,7 @@ import Model
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import System.Random
+import System.IO
 import Spaceship
 import Asteroid
 import UFO
@@ -97,7 +98,7 @@ pauseStep _ gameState@(MkGameState {gsKeys = keys, gsIsPaused = isPaused})
 -----------------------------------------
 highScoresStep :: Float -> GameState -> IO GameState
 highScoresStep _ gameState = do
-    highScores <- loadHighScores "high-scores.txt"
+    highScores <- loadHighScores "./high-scores.txt"
     displayTopHighScores highScores
     return gameState { gsScreen = HighScores }
 

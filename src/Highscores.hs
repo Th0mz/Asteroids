@@ -1,3 +1,4 @@
+-- This module contains the functions which represent the highscores shown at the end of a game
 module HighScores where
 
 import Graphics.Gloss

@@ -1,6 +1,7 @@
 --This module defines how to turn the gamestate into a picture (incl. animations)
 module View where
 
+import System.IO
 import Graphics.Gloss
 import Model
 import Asteroid
@@ -73,7 +74,7 @@ highScoresView :: GameState -> IO Picture
 highScoresView gameState = do
     let pauseText = Translate (-90) 0 $ Scale 0.5 0.5 $ Color white $ Text "High Scores"
         instrText = Translate (-200) (-40) $ Scale 0.2 0.2 $ Color white $ Text "press q to quit" --still have to fix this
-    highScores <- loadHighScores "high-scores.txt"
+    highScores <- loadHighScores "./high-scores.txt"
     let scoresPicture = renderHighScores highScores
     return $ Pictures [scoresPicture, pauseText, instrText]
 
