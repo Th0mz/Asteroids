@@ -8,6 +8,7 @@ import Spaceship
 import UFO
 import HighScores
 import Bullet (renderBullet)
+import Auxiliary.Constants (windowWidth, windowHeight)
     -- ( GameState(infoToShow),
     --  InfoToShow(ShowAChar, ShowNothing, ShowANumber))
 
@@ -19,7 +20,9 @@ view gameState@(MkGameState {gsScreen = screen}) =
         Pause      -> pauseView gameState
         HighScores -> highScoresView gameState
 
--- main screen view
+-----------------------------------------
+--              M A I N                --
+-----------------------------------------
 mainView :: GameState -> IO Picture
 mainView gameState = let
     asteroidsTitle = Translate (-225) 0 $ Scale 0.7 0.7 $ Color white $ Text "ASTEROIDS"
@@ -27,9 +30,11 @@ mainView gameState = let
 
     in return $ Pictures [asteroidsTitle, instrText]
 
--- game screen view
+-----------------------------------------
+--              G A M E                --
+-----------------------------------------
 gameView :: GameState -> IO Picture
-gameView gameState = do
+gameView gameState@(MkGameState {gsScore = score, gsSpaceship = spaceship}) = do
     spaceshipPicture   <- renderSpaceship       (gsSpaceship gameState)
     spaceshipPictureHB <- renderSpaceshipHB     (gsSpaceship gameState)
     asteroidPictures   <- mapM renderAsteroid   (gsAsteroids gameState)
@@ -37,9 +42,13 @@ gameView gameState = do
     ufoPictures        <- mapM renderUfo        (gsUfos gameState)
     ufoPicturesHB      <- mapM renderUfoHB      (gsUfos gameState)
     bulletPictures     <- mapM renderBullet     (gsBullets gameState)
+    let scoreText = Translate (- fromIntegral windowWidth / 2 + 10) (fromIntegral windowHeight / 2 - 25) $ Scale 0.15 0.15 $ Color white $ Text $ "score: " ++ show score 
+        livesText = Translate (- fromIntegral windowWidth / 2 + 10) (fromIntegral windowHeight / 2 - 50) $ Scale 0.15 0.15 $ Color white $ Text $ "lives: " ++ show (sLives spaceship)
 
     return $ Pictures $
-        [  spaceshipPicture,
+        [  scoreText,
+           livesText,
+           spaceshipPicture,
            spaceshipPictureHB ]
         ++ asteroidPictures
         ++ asteroidPicturesHB
@@ -47,7 +56,9 @@ gameView gameState = do
         ++ ufoPicturesHB
         ++ bulletPictures
 
--- pause screen view
+-----------------------------------------
+--             P A U S E               --
+-----------------------------------------
 pauseView :: GameState -> IO Picture
 pauseView gameState = do
     game <- gameView gameState
@@ -55,7 +66,9 @@ pauseView gameState = do
         instrText = Translate (-200) (-40) $ Scale 0.2 0.2 $ Color white $ Text "press 'p' again to resume play"
     return $ Pictures $ game : [pauseText, instrText]
 
--- high scores view
+-----------------------------------------
+--         H I G H S C O R E S         --
+-----------------------------------------
 highScoresView :: GameState -> IO Picture
 highScoresView gameState = do
     let pauseText = Translate (-90) 0 $ Scale 0.5 0.5 $ Color white $ Text "High Scores"
@@ -66,7 +79,7 @@ highScoresView gameState = do
 
 renderHighScores :: HighScores -> Picture
 renderHighScores highScores =
-    let renderedScores = map renderScoreWithPosition (zip [1..] highScores)
+    let renderedScores = zipWith (curry renderScoreWithPosition) [1..] highScores
     in Pictures renderedScores
 
 renderScoreWithPosition :: (Int, HSEntry) -> Picture

@@ -5,7 +5,14 @@ import Model
 import Auxiliary.Operations
 
 checkCollisions :: GameState -> GameState
-checkCollisions gameState = foldr isSpaceshipColliding gameState [spaceship]
+checkCollisions gameState = 
+        let gameState1 = foldr isSpaceshipColliding gameState  [spaceship]
+            gameState2 = foldr isAsteroidColliding  gameState1  asteroids
+            gameState3 = foldr isUFOColliding       gameState2  ufos
+            gameState4 = foldr isBulletColliding    gameState3  bullets
+        -- remove collided flag
+        in resetCollision gameState4
+
     where
         spaceship = gsSpaceship gameState
         -- spaceship can collide with: ufos, asteroids and bullets
@@ -34,6 +41,14 @@ checkCollisions gameState = foldr isSpaceshipColliding gameState [spaceship]
         isBulletColliding bullet gameState = checkUFOsCollision bullet $
                                              checkAsteroidsCollision bullet $
                                              checkSpaceshipCollision bullet gameState
+        
+        resetCollision :: GameState -> GameState
+        resetCollision gameState = gameState {
+                gsSpaceship =     removeCollieded (gsSpaceship gameState),
+                gsAsteroids = map removeCollieded (gsAsteroids gameState),
+                gsBullets   = map removeCollieded (gsBullets gameState),
+                gsUfos      = map removeCollieded (gsUfos gameState)
+        }
 
 
 checkSpaceshipCollision :: Collidable a => a -> GameState -> GameState

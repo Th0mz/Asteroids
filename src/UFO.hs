@@ -13,6 +13,25 @@ import Auxiliary.Operations
 import Spaceship
 import Hitbox
 
+
+-----------------------------------------
+--     I N I T I A L I Z A T I O N     --
+-----------------------------------------
+
+-- initUfo :: IO UFO
+-- initUfo = do
+--     randomX <- randomRIO (windowMinX, windowMaxX)
+--     randomY <- randomRIO (windowMinY, windowMaxY)
+--     return MkUfo {
+--         uSkin = Data.loadBMP ufoBitmap,
+--         uHitBox = MkHitBox { hPosition = (randomX, randomY), hRadius = ufoSize / 2 },
+--         uVelocity = (30, 30),
+--         uCollided = False
+--     }
+-- 
+-- addUfo :: UFO -> [UFO] -> [UFO]
+-- addUfo ufo ufos = ufo : ufos
+
 -- ------------------------------------ --
 --              V I E W                 --
 -- ------------------------------------ --

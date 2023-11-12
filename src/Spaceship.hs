@@ -2,9 +2,9 @@
 module Spaceship where
 
 import Graphics.Gloss ( white, circle, color, Picture (Translate, Rotate, Color), Point, Vector, translate, red, line )
-import Model ( Spaceship (MkSpaceship, sHitBox, sVelocity, sSkin, sDirection, sCooldown, sCollided),
+import Model ( Spaceship (MkSpaceship, sHitBox, sVelocity, sSkin, sDirection, sCooldown, sCollided, sLives, sId),
                HitBox (MkHitBox, hPosition, hRadius),
-               GameState (MkGameState, gsSpaceship, gsKeys), Keys, KeyBoard (KBup, KBleft, KBright, KBspace), Cooldown, Collidable (..)
+               GameState (MkGameState, gsSpaceship, gsKeys, gsSpaceshipSkin), Keys, KeyBoard (KBup, KBleft, KBright, KBspace), Cooldown, Collidable (..), getIdentifier
              )
 import GHC.Num.BigNat (raiseDivZero_BigNat)
 import Auxiliary.Operations
@@ -15,6 +15,25 @@ import Bullet (spawnBullet)
 import Hitbox
 
 import qualified Data.Set as S
+
+-----------------------------------------
+--     I N I T I A L I Z A T I O N     --
+-----------------------------------------
+setupSpaceShip :: GameState -> GameState
+setupSpaceShip gameState@(MkGameState {gsSpaceshipSkin = skin}) = gameState' {
+        gsSpaceship = MkSpaceship {
+            sId = id,
+            sSkin = skin,
+            sLives = 3,
+            sCooldown = 0,
+            sHitBox = MkHitBox {hPosition = (0, 0), hRadius = spaceshipSize / 2},
+            sDirection = (0, 1),
+            sVelocity = (0, 0),
+            sCollided = False
+        }
+    }
+    where 
+        (id, gameState') = getIdentifier gameState
 
 -- ------------------------------------ --
 --              V I E W                 --

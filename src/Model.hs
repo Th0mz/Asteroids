@@ -1,3 +1,4 @@
+{-# LANGUAGE InstanceSigs #-}
 module Model where
 
 import qualified Graphics.Gloss as Data (Point, Vector, loadBMP)
@@ -8,12 +9,16 @@ import System.Random
 import Auxiliary.Constants
 import qualified Data.Set as S
 import HighScores
+import Data.List (elemIndex)
+import Data.Bits (Bits(xor))
+import qualified Data.Maybe
 
 -- properties
 type Radius = Float
 type LifeTime = Float
 type Collided = Bool
 type Cooldown = Float
+type Identifier = Int
 
 -- point operations
 pDistance :: Point -> Point -> Float
@@ -24,12 +29,13 @@ pDistance (x, y) (x', y') = sqrt $ (x' - x) ** 2 + (y' - y) ** 2
 --          C O L L I D A B L E         --
 ------------------------------------------
 class Collidable a where
-    getHitBox   :: a -> HitBox  
+    getHitBox   :: a -> HitBox
     didCollide  :: a -> Collided
+    removeCollieded :: a -> a
     afterCollision    :: a -> GameState -> GameState
     isColliding :: Collidable b => a -> b -> Bool
     isColliding x y = pDistance posX posY < rX + rY
-        where 
+        where
             -- x object information 
             hitBoxX = getHitBox x
             posX = hPosition hitBoxX
@@ -38,120 +44,125 @@ class Collidable a where
             hitBoxY = getHitBox y
             posY = hPosition hitBoxY
             rY = hRadius hitBoxY
-    
 
 
 -- collidable instances
 instance Collidable Spaceship where
-    getHitBox = sHitBox 
+    getHitBox = sHitBox
     didCollide = sCollided
-    afterCollision = undefined
+
+    afterCollision :: Spaceship -> GameState -> GameState
+    afterCollision spaceship@(MkSpaceship {sLives = lives, sHitBox = hitBox}) gameState
+        | not $ sCollided spaceship = gameState {gsSpaceship = newSpaceship}
+        | otherwise = gameState
+        where
+            newHitBox = hitBox {hPosition = (0, 0)}
+            newSpaceship = spaceship {
+                sVelocity  = (0, 0),
+                sDirection = (0, 1),
+                sHitBox = newHitBox,
+                sLives = lives - 1,
+                sCollided = True
+            }
+
+    removeCollieded :: Spaceship -> Spaceship
+    removeCollieded spaceship = spaceship {sCollided = False}
+
 
 instance Collidable Asteroid where
-    getHitBox = aHitBox 
+    getHitBox = aHitBox
     didCollide = aCollided
-    afterCollision = undefined
+
+    afterCollision :: Asteroid -> GameState -> GameState
+    afterCollision _  = id
+
+    removeCollieded :: Asteroid -> Asteroid
+    removeCollieded asteroid = asteroid {aCollided = False}
+
 
 instance Collidable UFO where
-    getHitBox = uHitBox 
+    getHitBox = uHitBox
     didCollide = uCollided
     afterCollision = undefined
 
+    removeCollieded :: UFO -> UFO
+    removeCollieded ufo = ufo {uCollided = False}
+
 instance Collidable Bullet where
-    getHitBox = bHitBox 
+    getHitBox = bHitBox
     didCollide = bCollided
-    afterCollision = undefined
+
+    afterCollision :: Bullet -> GameState -> GameState
+    afterCollision bullet gameState@(MkGameState {gsSpaceship = spaceship}) = gameState {
+        gsSpaceship =  spaceship {sLives = getIndex bullet (gsBullets gameState) + 100}
+    }
+
+        where
+            getIndex :: Bullet -> [Bullet] -> Int
+            getIndex bullet list =
+                Data.Maybe.fromMaybe 1000 (elemIndex bullet list)
+
+    removeCollieded :: Bullet -> Bullet
+    removeCollieded bullet = bullet {bCollided = False}
 
 
 data HitBox = MkHitBox {
     hPosition :: Data.Point,
     hRadius :: Radius
 }
-
 -- spaceship
 type Lives = Int
 data Spaceship = MkSpaceship {
+    sId   :: Identifier,
     sSkin :: IO Picture,
     sLives :: Lives,
     sCooldown :: Cooldown,
-    sHitBox :: HitBox, 
+    sHitBox :: HitBox,
     sDirection :: Data.Vector,
     sVelocity :: Data.Vector,
-    sCollided :: Collided 
+    sCollided :: Collided
 }
 
-initSpaceShip :: Spaceship
-initSpaceShip = MkSpaceship {
-    sSkin = Data.loadBMP spaceshipBitmap,
-    sLives = 3,
-    sCooldown = 0,
-    sHitBox = MkHitBox {hPosition = (0, 0), hRadius = spaceshipSize / 2},
-    sDirection = (0, 1),
-    sVelocity = (0, 0),
-    sCollided = False
-}
+instance Eq Spaceship where
+    MkSpaceship{sId = idX} == MkSpaceship{sId = idY} = idX == idY
 
 -- asteroid
 data Size = Small | Medium | Large
 data Asteroid = MkAsteroid {
+    aId   :: Identifier,
     aSkin :: IO Picture,
-    aHitBox :: HitBox, 
-    aVelocity :: Data.Vector, 
-    aCollided :: Collided, 
+    aHitBox :: HitBox,
+    aVelocity :: Data.Vector,
+    aCollided :: Collided,
     aSize :: Size
 }
 
-initAsteroid :: Size -> IO Asteroid
-initAsteroid size = do
-    randomX <- randomRIO (windowMinX, windowMaxX)
-    randomY <- randomRIO (windowMinY, windowMaxY)
-    return MkAsteroid {
-        aSkin = Data.loadBMP $ case size of
-            Small -> sAsteroidBitmap
-            Medium -> mAsteroidBitmap
-            Large -> lAsteroidBitmap,
-        aHitBox = MkHitBox { hPosition = (randomX, randomY), hRadius = case size of
-            Small -> sAsteroidSize / 2
-            Medium -> mAsteroidSize / 2
-            Large -> lAsteroidSize / 2
-      },
-        aVelocity = (20, 20),
-        aCollided = False,
-        aSize = size
-    }
-
-addAsteroid :: Asteroid -> [Asteroid] -> [Asteroid]
-addAsteroid asteroid asteroids = asteroid : asteroids
+instance Eq Asteroid where
+    MkAsteroid{aId = idX} == MkAsteroid{aId = idY} = idX == idY
 
 -- bullet
 data Bullet = MkBullet {
-    bHitBox :: HitBox, 
-    bVelocity :: Data.Vector, 
+    bId   :: Identifier,
+    bHitBox :: HitBox,
+    bVelocity :: Data.Vector,
     bLifeTime :: LifeTime,
     bCollided :: Collided
 }
 
+instance Eq Bullet where
+    MkBullet{bId = idX} == MkBullet{bId = idY} = idX == idY
+
 -- ufo
 data UFO = MkUfo {
+    uId   :: Identifier,
     uSkin :: IO Picture,
-    uHitBox :: HitBox, 
-    uVelocity :: Data.Vector, 
+    uHitBox :: HitBox,
+    uVelocity :: Data.Vector,
     uCollided :: Collided
 }
 
-initUfo :: IO UFO
-initUfo = do
-    randomX <- randomRIO (windowMinX, windowMaxX)
-    randomY <- randomRIO (windowMinY, windowMaxY)
-    return MkUfo {
-        uSkin = Data.loadBMP ufoBitmap,
-        uHitBox = MkHitBox { hPosition = (randomX, randomY), hRadius = ufoSize / 2 },
-        uVelocity = (30, 30),
-        uCollided = False
-    }
-
-addUfo :: UFO -> [UFO] -> [UFO]
-addUfo ufo ufos = ufo : ufos
+instance Eq UFO where
+    MkUfo{uId = idX} == MkUfo{uId = idY} = idX == idY
 
 -- general game state
 type Paused = Bool
@@ -166,24 +177,32 @@ data KeyBoard = KBup | KBleft | KBright | KBspace | KBenter | KBpause | KBnone
     deriving (Eq, Ord)
 
 
+getIdentifier :: GameState -> (Identifier, GameState)
+getIdentifier gameState@(MkGameState {gsGlobalIdentifier = id}) =
+    (id, gameState {gsGlobalIdentifier = id + 1}) 
+
 initialState :: IO GameState
 initialState = do
-    randomSmallAsteroid  <- initAsteroid Small
-    randomMediumAsteroid <- initAsteroid Medium
-    randomLargeAsteroid  <- initAsteroid Large
-    randomUfo            <- initUfo
     highScores           <- loadHighScores "high-scores.txt"
 
     return MkGameState {
-        gsScreen = HighScores, --Main,
-        gsSpaceship = initSpaceShip,
-        gsAsteroids = [randomSmallAsteroid, randomMediumAsteroid, randomLargeAsteroid],
-        gsUfos = [randomUfo],
+        gsScreen = Main,
+        gsSpaceship = undefined,
+        gsAsteroids = [],
+        gsUfos = [],
         gsBullets = [],
         gsScore = 0,
         gsHighScores = highScores,
         gsKeys = S.empty,
-        gsIsPaused = False
+        gsIsPaused = False,
+        gsGlobalIdentifier = 0,
+
+        -- skins
+        gsSpaceshipSkin = Data.loadBMP spaceshipBitmap,
+        gsAsteroidSkinS = Data.loadBMP sAsteroidBitmap,
+        gsAsteroidSkinM = Data.loadBMP mAsteroidBitmap,
+        gsAsteroidSkinL = Data.loadBMP lAsteroidBitmap,
+        gsUFOSkin       = Data.loadBMP ufoBitmap
     }
 
 data GameState = MkGameState {
@@ -195,5 +214,13 @@ data GameState = MkGameState {
     gsScore      :: HighScores.Score,
     gsHighScores :: [HSEntry],
     gsKeys       :: Keys,
-    gsIsPaused   :: Paused
+    gsIsPaused   :: Paused,
+    gsGlobalIdentifier :: Identifier,
+
+    -- skins
+    gsSpaceshipSkin  :: IO Picture,
+    gsAsteroidSkinS  :: IO Picture,
+    gsAsteroidSkinM  :: IO Picture,
+    gsAsteroidSkinL  :: IO Picture,
+    gsUFOSkin        :: IO Picture
 }

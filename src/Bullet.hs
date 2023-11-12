@@ -27,10 +27,12 @@ renderBullet bullet =
 
 spawnBullet :: Point -> Vector -> GameState -> GameState
 spawnBullet position direction gameState =
-        gameState{gsBullets = bullet : gsBullets gameState}
+        gameState'{gsBullets = bullet : gsBullets gameState}
     where
+        (id, gameState') = getIdentifier gameState
         velocity = mulSV bulletSpeed (normalizeV direction)
         bullet = MkBullet {
+            bId = id,
             bHitBox = MkHitBox { hPosition = position, hRadius = bulletRadius },
             bVelocity = velocity,
             bLifeTime = bulletLifetime,

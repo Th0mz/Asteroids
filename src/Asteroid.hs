@@ -1,5 +1,4 @@
 -- This module contains the data types which represent the state of the game in the context of the Asteroids
-{-# LANGUAGE InstanceSigs #-}
 module Asteroid where
 
 import Graphics.Gloss (white, circle, color, Picture (Translate), Point, Vector, translate)
@@ -10,6 +9,31 @@ import GHC.Num.BigNat (raiseDivZero_BigNat)
 import Auxiliary.Operations
 import Auxiliary.Constants
 import Hitbox
+
+-----------------------------------------
+--     I N I T I A L I Z A T I O N     --
+-----------------------------------------
+
+-- initAsteroid :: Size -> IO Asteroid
+-- initAsteroid size = do
+--     randomX <- randomRIO (windowMinX, windowMaxX)
+--     randomY <- randomRIO (windowMinY, windowMaxY)
+--     return MkAsteroid {
+--         aSkin = Data.loadBMP $ case size of
+--             Small -> sAsteroidBitmap
+--             Medium -> mAsteroidBitmap
+--             Large -> lAsteroidBitmap,
+--         aHitBox = MkHitBox { hPosition = (randomX, randomY), hRadius = case size of
+--             Small -> sAsteroidSize / 2
+--             Medium -> mAsteroidSize / 2
+--             Large -> lAsteroidSize / 2
+--       },
+--         aVelocity = (20, 20),
+--         aCollided = False,
+--         aSize = size
+--     }
+-- addAsteroid :: Asteroid -> [Asteroid] -> [Asteroid]
+-- addAsteroid asteroid asteroids = asteroid : asteroids
 
 -- ------------------------------------ --
 --              V I E W                 --
