@@ -14,6 +14,9 @@ translatePoint (x, y) (vX, vY) = (x + vX, y + vY)
 addVectors :: Vector -> Vector -> Vector
 addVectors (vX, vY) (uX, uY) = (vX + uX, vY + uY)
 
+vectorFromPoints :: Point -> Point -> Vector
+vectorFromPoints (pX, pY) (uX, uY) = (pX - uX, pY - uX)
+
 scaleVector :: Float -> Vector -> Vector
 scaleVector factor (vX, vY) = (vX - vX * factor, vY - vY * factor)
 

@@ -98,9 +98,9 @@ instance Collidable Asteroid where
 asteroidScore :: Asteroid -> Int
 asteroidScore MkAsteroid {aSize = size} =
     case size of
-        Large  -> 100
-        Medium -> 250
-        Small  -> 500
+        Large  -> lAsteroidScore
+        Medium -> mAsteroidScore
+        Small  -> sAsteroidScore
         _      -> 0
 
 splitAsteroid :: Asteroid -> GameState -> GameState
@@ -142,8 +142,11 @@ instance Collidable UFO where
     didCollide = uCollided
 
     afterCollision :: UFO -> GameState -> GameState
-    afterCollision ufo gameState
-        | not $ uCollided ufo = gameState
+    afterCollision ufo gameState@(MkGameState {gsUfos = ufos})
+        | not $ uCollided ufo = gameState {
+            gsUfos = updateElement ufo ufo {uCollided = True, uExploding = True} ufos,
+            gsScore = gsScore gameState + ufoScore
+        }
         | otherwise = gameState
 
     removeCollieded :: UFO -> UFO
@@ -227,6 +230,7 @@ data UFO = MkUfo {
     uSkin :: IO Picture,
     uHitBox :: HitBox,
     uVelocity :: Data.Vector,
+    uShootTime :: Float,
     uExploding :: Exploding,
     uCollided :: Collided
 }

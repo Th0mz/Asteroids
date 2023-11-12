@@ -109,6 +109,15 @@ mAsteroidSpeed = 50
 lAsteroidSpeed :: Float
 lAsteroidSpeed = 25
 
+sAsteroidScore :: Int
+sAsteroidScore = 500
+
+mAsteroidScore :: Int
+mAsteroidScore = 250
+
+lAsteroidScore :: Int
+lAsteroidScore = 100
+
 -- ---------------------------- --
 --            U F O             --
 -- ---------------------------- --
@@ -117,3 +126,9 @@ timeBetweenUFOs = 15
 
 ufoSpeed :: Float
 ufoSpeed = 50
+
+ufoScore :: Int
+ufoScore = 1000
+
+ufoShootingTimeout :: Float
+ufoShootingTimeout = 1.5

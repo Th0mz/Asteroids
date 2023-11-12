@@ -41,6 +41,7 @@ gameView gameState@(MkGameState {gsScore = score, gsSpaceship = spaceship}) = do
     asteroidPicturesHB <- mapM renderAsteroidHB (gsAsteroids gameState)
     ufoPictures        <- mapM renderUfo        (gsUfos gameState)
     ufoPicturesHB      <- mapM renderUfoHB      (gsUfos gameState)
+    ufoAimPicture      <- mapM (renderUfoDir $ gsSpaceship gameState)     (gsUfos gameState)
     bulletPictures     <- mapM renderBullet     (gsBullets gameState)
     let scoreText = Translate (- fromIntegral windowWidth / 2 + 10) (fromIntegral windowHeight / 2 - 25) $ Scale 0.15 0.15 $ Color white $ Text $ "score: " ++ show score 
         livesText = Translate (- fromIntegral windowWidth / 2 + 10) (fromIntegral windowHeight / 2 - 50) $ Scale 0.15 0.15 $ Color white $ Text $ "lives: " ++ show (sLives spaceship)
@@ -53,6 +54,7 @@ gameView gameState@(MkGameState {gsScore = score, gsSpaceship = spaceship}) = do
         ++ ufoPictures
         ++ ufoPicturesHB
         ++ bulletPictures
+        ++ ufoAimPicture
         ++ [ scoreText,
              livesText ]
 

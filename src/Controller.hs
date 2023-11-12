@@ -57,7 +57,7 @@ mainStep _ gameState@(MkGameState {gsKeys = keys})
 spawnAsteroids :: GameState -> IO GameState
 spawnAsteroids gameState@(MkGameState {gsAsteroids = asteroids})
     -- add asteroids if asteroid list is empty
-    | null asteroids = setupAsteroids 5 gameState
+    | null asteroids = setupAsteroids 1 gameState
     | otherwise = return gameState
 
 -- TODO : spawn enemies
@@ -80,7 +80,7 @@ gameStep secs gameState = do
                 $ stepUfo secs
                 $ stepAsteroid secs
                 $ stepSpaceShip secs gameState 
-                
+
     spawnAsteroids gameState'
     where
         -- high-order events
