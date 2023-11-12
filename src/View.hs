@@ -44,7 +44,7 @@ gameView gameState = do
 
 -- pause screen view
 pauseView :: GameState -> IO Picture
-pauseView gameState = undefined
+pauseView = gameView
 
 -- high scores view
 highScoresView :: GameState -> IO Picture

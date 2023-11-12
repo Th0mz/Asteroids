@@ -28,13 +28,23 @@ mainStep = undefined
 
 gameStep :: Float -> GameState -> IO GameState
 gameStep secs = return
+              . checkPause
               . stepBullets secs
               . stepUfo secs
               . stepAsteroid secs
               . stepSpaceShip secs
+    where
+        checkPause :: GameState -> GameState
+        checkPause gameState@(MkGameState {gsKeys = keys, gsIsPaused = isPaused})
+            | S.notMember KBpause keys &&  isPaused = gameState{gsIsPaused = False}
+            | S.member KBpause keys && not isPaused = gameState{gsScreen = Pause}
+            | otherwise = gameState
 
 pauseStep :: Float -> GameState -> IO GameState
-pauseStep = undefined
+pauseStep _ gameState@(MkGameState {gsKeys = keys, gsIsPaused = isPaused})
+        | S.notMember KBpause keys && not isPaused = return $ gameState {gsIsPaused = True} 
+        | S.member    KBpause keys &&     isPaused = return $ gameState {gsScreen = Game}
+        | otherwise = return gameState
 
 highScoresStep :: Float -> GameState -> IO GameState
 highScoresStep = undefined

@@ -41,7 +41,8 @@ spawnBullet position direction gameState =
         bullet = MkBullet {
             bHitBox = MkHitBox { hPosition = position, hRadius = bulletRadius },
             bVelocity = velocity,
-            bLifeTime = bulletLifetime
+            bLifeTime = bulletLifetime,
+            bCollided = False
         }
 
 -- bullet garbage collector must be done here
