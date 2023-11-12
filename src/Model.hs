@@ -12,6 +12,7 @@ import HighScores
 import Data.List (elemIndex)
 import Data.Bits (Bits(xor))
 import qualified Data.Maybe
+import Data.Map (elemAt)
 
 -- properties
 type Radius = Float
@@ -93,17 +94,24 @@ instance Collidable Bullet where
     didCollide = bCollided
 
     afterCollision :: Bullet -> GameState -> GameState
-    afterCollision bullet gameState@(MkGameState {gsSpaceship = spaceship}) = gameState {
-        gsSpaceship =  spaceship {sLives = getIndex bullet (gsBullets gameState) + 100}
-    }
-
+    afterCollision bullet gameState@(MkGameState {gsBullets = bullets}) = 
+        gameState {
+            gsBullets = updateIndex index bullet { bLifeTime = 0 } bullets
+        }
         where
-            getIndex :: Bullet -> [Bullet] -> Int
-            getIndex bullet list =
-                Data.Maybe.fromMaybe 1000 (elemIndex bullet list)
+            index = case elemIndex bullet bullets of
+                Just i -> i
+                Nothing -> error "bullet not in bullets" 
+
+
+            
+
 
     removeCollieded :: Bullet -> Bullet
     removeCollieded bullet = bullet {bCollided = False}
+
+updateIndex :: Int -> a -> [a] -> [a]
+updateIndex i newVal lst =  take i lst ++ [newVal] ++ drop (i + 1) lst
 
 
 data HitBox = MkHitBox {
