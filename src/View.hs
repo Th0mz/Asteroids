@@ -73,12 +73,12 @@ pauseView gameState = do
 --         H I G H S C O R E S         --
 -----------------------------------------
 highScoresView :: GameState -> IO Picture
-highScoresView gameState = do
-    let pauseText = Translate (-90) 0 $ Scale 0.5 0.5 $ Color white $ Text "High Scores"
-        instrText = Translate (-200) (-40) $ Scale 0.2 0.2 $ Color white $ Text "press q to quit" --still have to fix this
-    highScores <- loadHighScores "./high-scores.txt"
-    let scoresPicture = renderHighScores highScores
-    return $ Pictures [scoresPicture, pauseText, instrText]
+highScoresView gameState@(MkGameState {gsHighScores = highscores}) = do
+    let highscText = Translate (-200) (fromIntegral windowHeight / 2 - 100) $ Scale 0.5 0.5 $ Color white $ Text $ "High Scores"
+        quitText  = Translate (-125) (-80) $ Scale 0.2 0.2 $ Color white $ Text "press 'q' to quit" --still have to fix this
+        playText  = Translate (-145) (-120) $ Scale 0.2 0.2 $ Color white $ Text "press enter to quit" --still have to fix this
+    
+    return $ Pictures [renderHighScores highscores, highscText, quitText, playText]
 
 renderHighScores :: HighScores -> Picture
 renderHighScores highScores =
@@ -87,7 +87,7 @@ renderHighScores highScores =
 
 renderScoreWithPosition :: (Int, HSEntry) -> Picture
 renderScoreWithPosition (position, (name, score)) =
-    Translate (-200) (fromIntegral (-40 * position)) $
+    Translate (-100) (fromIntegral (170 + (-40 * position))) $
     Scale 0.2 0.2 $
     Color white $
     Text $ name ++ ": " ++ show score

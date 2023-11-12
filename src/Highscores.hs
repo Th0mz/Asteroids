@@ -5,24 +5,35 @@ import Graphics.Gloss
 import Data.List (sortBy)
 import System.IO
 
+import Text.Read (readMaybe)
+import Data.Maybe (mapMaybe)
+
+import Data.Ord (comparing)
+import Auxiliary.Constants
+
 type Score = Int
 type Name = String
 type HSEntry = (Name, Score)
 type HighScores = [HSEntry]
 
+parseLine :: String -> Maybe HSEntry
+parseLine line = case words line of
+  [name, scoreStr] -> do
+    score <- readMaybe scoreStr
+    return (name, score)
+  _ -> Nothing
+
 loadHighScores :: FilePath -> IO HighScores
 loadHighScores filePath = do
-    contents <- readFile filePath
-    let entries = map readEntry $ lines contents
-    return entries
-    where
-        readEntry :: String -> HSEntry
-        readEntry str = case words str of
-            [name, score] -> (name, read score)
-            _             -> error "Invalid entry format"
+  content <- readFile filePath
+  let entries = mapMaybe parseLine (lines content)
+  return entries
+
+sortByDescendingSnd :: [(Name, Score)] -> [HSEntry]
+sortByDescendingSnd = sortBy (flip $ comparing snd)
 
 addHighScore :: Name -> Score -> HighScores -> HighScores
-addHighScore name score highScores = (name, score) : highScores
+addHighScore name score highScores = take highScoreSize  $ sortByDescendingSnd ((name, score) : highScores)  
 
 saveHighScoresToFile :: FilePath -> HighScores -> IO ()
 saveHighScoresToFile filePath highScores = do
@@ -31,11 +42,3 @@ saveHighScoresToFile filePath highScores = do
     where
         showEntry :: HSEntry -> String
         showEntry (name, score) = name ++ " " ++ show score
-
-displayTopHighScores :: HighScores -> IO ()
-displayTopHighScores highScores = do
-    let topScores = take 10 $ sortByDescendingSnd highScores --change to all scores
-    mapM_ (\(name, score) -> putStrLn $ name ++ ": " ++ show score) topScores
-    where
-        sortByDescendingSnd :: HighScores -> HighScores
-        sortByDescendingSnd = sortBy (\(_, score1) (_, score2) -> compare score2 score1)

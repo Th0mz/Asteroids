@@ -132,3 +132,15 @@ ufoScore = 1000
 
 ufoShootingTimeout :: Float
 ufoShootingTimeout = 1.5
+
+-- ---------------------------- --
+--      H I G H S C O R E S     --
+-- ---------------------------- --
+playerName :: String
+playerName = "PLY"
+
+highScoreSize :: Int
+highScoreSize = 5
+
+highScoresPath :: String
+highScoresPath = "highscores.txt"

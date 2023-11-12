@@ -15,6 +15,8 @@ import qualified Data.Set as S
 import Hitbox (checkCollisions)
 import HighScores
 import Auxiliary.Constants
+import Data.IntMap (keys)
+import System.Exit (exitSuccess)
 
 
 -- handle one iteration of the game
@@ -39,7 +41,8 @@ setupNewGame gameState = setupSpaceShip $
                             gsUfos = [],
                             gsBullets = [],
                             gsScore = 0,
-                            gsIsPaused = False
+                            gsIsPaused = False,
+                            gsHighScoreCheck = False
                         }
 
 mainStep :: Float -> GameState -> IO GameState
@@ -58,7 +61,7 @@ mainStep _ gameState@(MkGameState {gsKeys = keys})
 spawnAsteroids :: GameState -> IO GameState
 spawnAsteroids gameState@(MkGameState {gsAsteroids = asteroids})
     -- add asteroids if asteroid list is empty
-    | null asteroids = setupAsteroids 1 gameState
+    | null asteroids = setupAsteroids 5 gameState
     | otherwise = return gameState
 
 -- TODO : spawn enemies
@@ -109,12 +112,16 @@ pauseStep _ gameState@(MkGameState {gsKeys = keys, gsIsPaused = isPaused})
 -----------------------------------------
 --         H I G H S C O R E S         --
 -----------------------------------------
+-- closeWindow >> return ()
 highScoresStep :: Float -> GameState -> IO GameState
-highScoresStep _ gameState = do
-    highScores <- loadHighScores "./high-scores.txt"
-    displayTopHighScores highScores
-    return gameState { gsScreen = HighScores }
-
+highScoresStep _ gameState@(MkGameState {gsKeys = keys})  
+    | not $ gsHighScoreCheck gameState = return $ gameState {gsHighScores = addHighScore playerName (gsScore gameState) (gsHighScores gameState), gsHighScoreCheck = True}
+    | S.member KBenter keys = return $ setupNewGame gameState 
+    | S.member KBquit  keys = do
+                              saveHighScoresToFile highScoresPath $ gsHighScores gameState
+                              exitSuccess
+    | otherwise = return gameState
+    
 -- handle user input
 input :: Event -> GameState -> IO GameState
 input event@(EventKey _ state _ _) gameState =
@@ -137,6 +144,7 @@ toKeyboardKey (EventKey k _ _ _) =
         SpecialKey KeySpace -> KBspace -- space bar
         SpecialKey KeyEnter -> KBenter -- enter key
         Char 'p'            -> KBpause -- p key
+        Char 'q'            -> KBquit  -- q key
         _                   -> KBnone  -- key not recognized
 
 -- key released

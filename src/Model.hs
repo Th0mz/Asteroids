@@ -248,7 +248,7 @@ data Screen = Main | Game | Pause | HighScores
 
 -- player input
 type Keys = S.Set KeyBoard
-data KeyBoard = KBup | KBleft | KBright | KBspace | KBenter | KBpause | KBnone
+data KeyBoard = KBup | KBleft | KBright | KBspace | KBenter | KBquit | KBpause | KBnone
     deriving (Eq, Ord)
 
 
@@ -258,10 +258,10 @@ getIdentifier gameState@(MkGameState {gsGlobalIdentifier = id}) =
 
 initialState :: IO GameState
 initialState = do
-    highScores           <- loadHighScores "./high-scores.txt"
+    highScores           <- loadHighScores highScoresPath
 
     return MkGameState {
-        gsScreen = Main,
+        gsScreen = HighScores,
         gsEnemyTimer = 0,
         gsSpaceship = undefined,
         gsAsteroids = [],
@@ -271,6 +271,7 @@ initialState = do
         gsHighScores = highScores,
         gsKeys = S.empty,
         gsIsPaused = False,
+        gsHighScoreCheck = False,
         gsGlobalIdentifier = 0,
 
         -- skins
@@ -293,6 +294,7 @@ data GameState = MkGameState {
     gsKeys       :: Keys,
     gsIsPaused   :: Paused,
     gsGlobalIdentifier :: Identifier,
+    gsHighScoreCheck   :: Bool,
 
     -- skins
     gsSpaceshipSkin  :: IO Picture,
