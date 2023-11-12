@@ -13,7 +13,6 @@ executable my-gloss
                        gloss,
                        random,
                        containers,
-                       aeson
   hs-source-dirs:      src
   other-modules:       Controller
                      , Spaceship

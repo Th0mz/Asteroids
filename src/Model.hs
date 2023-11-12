@@ -7,6 +7,7 @@ import Graphics.Gloss (Picture, Point)
 import System.Random
 import Auxiliary.Constants
 import qualified Data.Set as S
+import HighScores
 
 -- properties
 type Radius = Float
@@ -157,7 +158,7 @@ data GameState = MkGameState {
     gsAsteroids  :: [Asteroid],
     gsUfos       :: [UFO],
     gsBullets    :: [Bullet],
-    gsScore      :: Score,
+    gsScore      :: HighScores.Score,
     gsHighScores :: [HSEntry],
     gsKeys       :: Keys,
     gsIsPaused   :: Paused
