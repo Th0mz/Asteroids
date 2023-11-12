@@ -96,3 +96,15 @@ bulletSpeed = 400
 
 bulletLifetime :: Float
 bulletLifetime = 1
+
+-- ---------------------------- --
+--       A S T E R O I D        --
+-- ---------------------------- --
+sAsteroidSpeed :: Float
+sAsteroidSpeed = 100
+
+mAsteroidSpeed :: Float
+mAsteroidSpeed = 50
+
+lAsteroidSpeed :: Float
+lAsteroidSpeed = 25

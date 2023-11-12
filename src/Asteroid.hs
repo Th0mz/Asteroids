@@ -9,31 +9,42 @@ import GHC.Num.BigNat (raiseDivZero_BigNat)
 import Auxiliary.Operations
 import Auxiliary.Constants
 import Hitbox
+import Control.Concurrent (signalQSem)
+import System.Random
+import Graphics.Gloss.Data.Vector (normalizeV, mulSV)
 
 -----------------------------------------
 --     I N I T I A L I Z A T I O N     --
 -----------------------------------------
 
--- initAsteroid :: Size -> IO Asteroid
--- initAsteroid size = do
---     randomX <- randomRIO (windowMinX, windowMaxX)
---     randomY <- randomRIO (windowMinY, windowMaxY)
---     return MkAsteroid {
---         aSkin = Data.loadBMP $ case size of
---             Small -> sAsteroidBitmap
---             Medium -> mAsteroidBitmap
---             Large -> lAsteroidBitmap,
---         aHitBox = MkHitBox { hPosition = (randomX, randomY), hRadius = case size of
---             Small -> sAsteroidSize / 2
---             Medium -> mAsteroidSize / 2
---             Large -> lAsteroidSize / 2
---       },
---         aVelocity = (20, 20),
---         aCollided = False,
---         aSize = size
---     }
--- addAsteroid :: Asteroid -> [Asteroid] -> [Asteroid]
--- addAsteroid asteroid asteroids = asteroid : asteroids
+setupAsteroids :: Int -> GameState -> IO GameState
+setupAsteroids 0      gameState = return gameState
+setupAsteroids amount gameState = do
+  gameState' <- addAsteroid gameState
+  setupAsteroids (amount - 1) gameState'
+
+addAsteroid :: GameState -> IO GameState
+addAsteroid gameState@(MkGameState { gsAsteroidSkinL = skin }) = do
+  -- pick random coordinates
+  randomX  <- randomRIO (windowMinX, windowMaxX)
+  randomY  <- randomRIO (windowMinY, windowMaxY)
+  randDirX <- randomRIO (-1.0 :: Float, 1.0)
+  randDirY <- randomRIO (-1.0 :: Float, 1.0)
+
+  return $ gameState' { gsAsteroids = MkAsteroid {
+            aId = id,
+            aSkin = skin,
+            aHitBox = MkHitBox { hPosition = (randomX, randomY), hRadius = lAsteroidSize / 2 },
+            -- set velocity with a random direction and magnitude 
+            --  equal to the large asteroid base speed
+            aVelocity = mulSV lAsteroidSpeed $ normalizeV (randDirX, randDirY),
+            aCollided = False,
+            aSize = Large
+      } : gsAsteroids gameState'
+    }
+  where
+    (id, gameState') = getIdentifier gameState
+
 
 -- ------------------------------------ --
 --              V I E W                 --

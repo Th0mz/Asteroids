@@ -29,7 +29,7 @@ step secs gameState@(MkGameState {gsScreen = screen, gsIsPaused = isPaused}) =
 --              M A I N                --
 -----------------------------------------
 setupNewGame :: GameState -> GameState
-setupNewGame gameState = setupSpaceShip $ 
+setupNewGame gameState = setupSpaceShip $
                          gameState {
                             gsScreen = Game,
                             gsAsteroids = [],
@@ -53,10 +53,15 @@ mainStep _ gameState@(MkGameState {gsKeys = keys})
 -- high-order functions
 
 -- TODO : spawn asteroids
+spawnAsteroids :: GameState -> IO GameState
+spawnAsteroids gameState@(MkGameState {gsAsteroids = asteroids})
+    -- add asteroids if asteroid list is empty
+    | null asteroids = setupAsteroids 5 gameState
+    | otherwise = return gameState
 -- TODO : spawn enemies
 
 gameStep :: Float -> GameState -> IO GameState
-gameStep secs = return
+gameStep secs = spawnAsteroids
               . checkGameOver
               . checkPause
               . checkCollisions
@@ -82,7 +87,7 @@ gameStep secs = return
 -----------------------------------------
 pauseStep :: Float -> GameState -> IO GameState
 pauseStep _ gameState@(MkGameState {gsKeys = keys, gsIsPaused = isPaused})
-        | S.notMember KBpause keys && not isPaused = return $ gameState {gsIsPaused = True} 
+        | S.notMember KBpause keys && not isPaused = return $ gameState {gsIsPaused = True}
         | S.member    KBpause keys &&     isPaused = return $ gameState {gsScreen = Game}
         | otherwise = return gameState
 
