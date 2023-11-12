@@ -16,16 +16,6 @@ import Hitbox
 
 import qualified Data.Set as S
 
-
-
-------------------------------------------
---          C O L L I D A B L E         --
-------------------------------------------
-instance Collidable Spaceship where
-    getHitBox = sHitBox 
-    didCollide = sCollided
-    afterCollision = undefined
-
 -- ------------------------------------ --
 --              V I E W                 --
 -- ------------------------------------ --

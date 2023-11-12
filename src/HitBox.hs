@@ -5,12 +5,26 @@ import Model
 import Auxiliary.Operations
 
 checkCollisions :: GameState -> GameState
-checkCollisions gameState = undefined
-    where 
+checkCollisions gameState = foldl checkAsteroidsCollision gameState [spaceship]
+    where
         spaceship = gsSpaceship gameState
-        bullets = gsBullets gameState
-        asteroids = gsAsteroids gameState
-        ufos = gsUfos gameState
+
+
+checkAsteroidsCollision :: Collidable a => GameState -> a -> GameState
+checkAsteroidsCollision gameState@(MkGameState {gsAsteroids = asteroids}) obj
+    | any (isColliding obj) asteroids = afterCollision obj gameState
+    | otherwise = gameState 
+
+
+-- checkBulletsCollision :: Collidable a => GameState -> a -> GameState
+-- checkAsteroidsCollision gameState@(MkGameState {gsBullets = bullets}) obj
+--     | any (isColliding obj) (filter (/= obj) bullets) = afterCollision obj gameState
+--     | otherwise = gameState
+-- 
+-- checkUFOsCollision :: Collidable a => GameState -> a -> GameState
+-- checkAsteroidsCollision gameState@(MkGameState {gsUfos = ufos}) obj
+--     | any (isColliding obj) (filter (/= obj) ufos) = afterCollision obj gameState
+--     | otherwise = gameState
 
 
 -- auxiliary function

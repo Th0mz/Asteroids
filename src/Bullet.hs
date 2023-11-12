@@ -7,14 +7,6 @@ import Graphics.Gloss.Data.Vector
 import Auxiliary.Operations
 import Hitbox
 
-------------------------------------------
---          C O L L I D A B L E         --
-------------------------------------------
-instance Collidable Bullet where
-    getHitBox = bHitBox 
-    didCollide = bCollided
-    afterCollision = undefined
-
 -- ------------------------------------ --
 --              V I E W                 --
 -- ------------------------------------ --

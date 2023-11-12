@@ -13,14 +13,6 @@ import Auxiliary.Operations
 import Spaceship
 import Hitbox
 
-------------------------------------------
---          C O L L I D A B L E         --
-------------------------------------------
-instance Collidable UFO where
-    getHitBox = uHitBox 
-    didCollide = uCollided
-    afterCollision = undefined
-
 -- ------------------------------------ --
 --              V I E W                 --
 -- ------------------------------------ --

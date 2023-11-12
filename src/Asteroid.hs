@@ -1,4 +1,5 @@
 -- This module contains the data types which represent the state of the game in the context of the Asteroids
+{-# LANGUAGE InstanceSigs #-}
 module Asteroid where
 
 import Graphics.Gloss (white, circle, color, Picture (Translate), Point, Vector, translate)
@@ -9,14 +10,6 @@ import GHC.Num.BigNat (raiseDivZero_BigNat)
 import Auxiliary.Operations
 import Auxiliary.Constants
 import Hitbox
-
-------------------------------------------
---          C O L L I D A B L E         --
-------------------------------------------
-instance Collidable Asteroid where
-    getHitBox = aHitBox 
-    didCollide = aCollided
-    afterCollision = undefined
 
 -- ------------------------------------ --
 --              V I E W                 --
@@ -56,7 +49,7 @@ stepAsteroid delta gameState@(MkGameState {gsAsteroids = asteroids}) =
             newHitBox = moveHitBox delta velocity hitBox
 
 moveAsteroid :: Float -> [Asteroid] -> [Asteroid]
-moveAsteroid delta asteroids = map moveSingleAsteroid asteroids
+moveAsteroid delta = map moveSingleAsteroid
   where
     moveSingleAsteroid asteroid = asteroid {aHitBox = newHitBox}
       where

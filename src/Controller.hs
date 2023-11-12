@@ -11,6 +11,7 @@ import UFO
 import Auxiliary.Operations
 import Bullet (stepBullets)
 import qualified Data.Set as S
+import Hitbox (checkCollisions)
 
 
 -- handle one iteration of the game
@@ -31,6 +32,7 @@ mainStep _ gameState@(MkGameState {gsKeys = keys})
 gameStep :: Float -> GameState -> IO GameState
 gameStep secs = return
               . checkPause
+              . checkCollisions
               . stepBullets secs
               . stepUfo secs
               . stepAsteroid secs

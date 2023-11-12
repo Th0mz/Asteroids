@@ -18,6 +18,10 @@ type Cooldown = Float
 pDistance :: Point -> Point -> Float
 pDistance (x, y) (x', y') = sqrt $ (x' - x) ** 2 + (y' - y) ** 2
 
+
+------------------------------------------
+--          C O L L I D A B L E         --
+------------------------------------------
 class Collidable a where
     getHitBox      :: a -> HitBox
     didCollide     :: a -> Collided
@@ -33,6 +37,27 @@ class Collidable a where
             hitBoxY = getHitBox y
             posY = hPosition hitBoxY
             rY = hRadius hitBoxY
+
+-- collidable instances
+instance Collidable Spaceship where
+    getHitBox = sHitBox 
+    didCollide = sCollided
+    afterCollision = undefined
+
+instance Collidable Asteroid where
+    getHitBox = aHitBox 
+    didCollide = aCollided
+    afterCollision = undefined
+
+instance Collidable UFO where
+    getHitBox = uHitBox 
+    didCollide = uCollided
+    afterCollision = undefined
+
+instance Collidable Bullet where
+    getHitBox = bHitBox 
+    didCollide = bCollided
+    afterCollision = undefined
 
 
 data HitBox = MkHitBox {
