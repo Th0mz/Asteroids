@@ -49,9 +49,10 @@ pauseStep _ gameState@(MkGameState {gsKeys = keys, gsIsPaused = isPaused})
         | otherwise = return gameState
 
 highScoresStep :: Float -> GameState -> IO GameState
-highScoresStep = undefined
-
-
+highScoresStep _ gameState@(MkGameState {gsKeys = keys})
+    | S.member KBScore keys && gsScreen gameState /= HighScores = return $ gameState {gsScreen = HighScores}
+    | S.member KBScore keys && gsScreen gameState == HighScores = return $ gameState {gsScreen = Game}
+    | otherwise = return gameState
 
 -- handle user input
 input :: Event -> GameState -> IO GameState
@@ -75,6 +76,7 @@ toKeyboardKey (EventKey k _ _ _) =
         SpecialKey KeySpace -> KBspace -- space bar
         SpecialKey KeyEnter -> KBenter -- enter key
         Char 'p'            -> KBpause -- p key
+        Char 's'            -> KBScore -- s key
         _                   -> KBnone  -- key not recognized
 
 -- key released

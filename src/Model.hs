@@ -148,7 +148,7 @@ initialState = do
         gsUfos = [randomUfo],
         gsBullets = [],
         gsScore = 0,
-        gsHighScores = loadHighScores "file_name.json",
+        gsHighScores = loadHighScores "high-scores.txt",
         gsKeys = S.empty,
         gsIsPaused = False
     }
