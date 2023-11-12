@@ -108,3 +108,12 @@ mAsteroidSpeed = 50
 
 lAsteroidSpeed :: Float
 lAsteroidSpeed = 25
+
+-- ---------------------------- --
+--            U F O             --
+-- ---------------------------- --
+timeBetweenUFOs :: Float
+timeBetweenUFOs = 15
+
+ufoSpeed :: Float
+ufoSpeed = 50

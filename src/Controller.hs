@@ -14,6 +14,7 @@ import Bullet (stepBullets)
 import qualified Data.Set as S
 import Hitbox (checkCollisions)
 import HighScores
+import Auxiliary.Constants
 
 
 -- handle one iteration of the game
@@ -33,6 +34,7 @@ setupNewGame :: GameState -> GameState
 setupNewGame gameState = setupSpaceShip $
                          gameState {
                             gsScreen = Game,
+                            gsEnemyTimer = timeBetweenUFOs,
                             gsAsteroids = [],
                             gsUfos = [],
                             gsBullets = [],
@@ -53,23 +55,34 @@ mainStep _ gameState@(MkGameState {gsKeys = keys})
 
 -- high-order functions
 
--- TODO : spawn asteroids
 spawnAsteroids :: GameState -> IO GameState
 spawnAsteroids gameState@(MkGameState {gsAsteroids = asteroids})
     -- add asteroids if asteroid list is empty
     | null asteroids = setupAsteroids 5 gameState
     | otherwise = return gameState
+
 -- TODO : spawn enemies
+spawnUFO :: Float -> GameState -> IO GameState
+spawnUFO delta gameState@(MkGameState {gsUfos = ufos, gsEnemyTimer = timer})
+    | timer < 0 = do
+        gameState' <- addUFO gameState
+        return $ gameState' {gsEnemyTimer = timeBetweenUFOs}
+    | otherwise = return $ gameState {gsEnemyTimer = timer - delta}
+
+
 
 gameStep :: Float -> GameState -> IO GameState
-gameStep secs = spawnAsteroids
-              . checkGameOver
-              . checkPause
-              . checkCollisions
-              . stepBullets secs
-              . stepUfo secs
-              . stepAsteroid secs
-              . stepSpaceShip secs
+gameStep secs gameState = do
+    gameState' <- spawnUFO secs
+                $ checkGameOver
+                $ checkPause
+                $ checkCollisions
+                $ stepBullets secs
+                $ stepUfo secs
+                $ stepAsteroid secs
+                $ stepSpaceShip secs gameState 
+                
+    spawnAsteroids gameState'
     where
         -- high-order events
         checkPause :: GameState -> GameState

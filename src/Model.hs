@@ -83,7 +83,9 @@ instance Collidable Asteroid where
         | not (aCollided asteroid) && not (aExploding asteroid) =
             gameState' {
                 gsAsteroids = updateElement asteroid asteroid { aCollided = True, aExploding = True } (gsAsteroids gameState'),
-                gsScore = gsScore gameState + asteroidScore asteroid
+                gsScore = gsScore gameState + asteroidScore asteroid,
+                -- reset ufo spawn timer if any asteroid is destroyed  
+                gsEnemyTimer = timeBetweenUFOs
             }
         | otherwise = gameState
         where
@@ -256,6 +258,7 @@ initialState = do
 
     return MkGameState {
         gsScreen = Main,
+        gsEnemyTimer = 0,
         gsSpaceship = undefined,
         gsAsteroids = [],
         gsUfos = [],
@@ -276,6 +279,7 @@ initialState = do
 
 data GameState = MkGameState {
     gsScreen     :: Screen,
+    gsEnemyTimer :: Float,
     gsSpaceship  :: Spaceship,
     gsAsteroids  :: [Asteroid],
     gsUfos       :: [UFO],

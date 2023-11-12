@@ -2,35 +2,54 @@
 module UFO where
 
 import Graphics.Gloss ( white, circle, color, Picture (Translate), Point, Vector, translate )
-import Model ( UFO (MkUfo, uHitBox, uVelocity, uSkin, uCollided),
+import Model ( UFO (MkUfo, uHitBox, uVelocity, uSkin, uCollided, uId, uExploding),
                Spaceship (MkSpaceship, sHitBox, sVelocity, sSkin),
                HitBox (MkHitBox, hPosition, hRadius),
-               GameState (MkGameState, gsUfos), Collidable (..)
+               GameState (MkGameState, gsUfos, gsUFOSkin, gsScore), Collidable (..), getIdentifier
 
              )
 import GHC.Num.BigNat (raiseDivZero_BigNat)
 import Auxiliary.Operations
 import Spaceship
 import Hitbox
+import System.Random
+import Auxiliary.Constants
+import Graphics.Gloss.Data.Vector
 
 
 -----------------------------------------
 --     I N I T I A L I Z A T I O N     --
 -----------------------------------------
 
--- initUfo :: IO UFO
--- initUfo = do
---     randomX <- randomRIO (windowMinX, windowMaxX)
---     randomY <- randomRIO (windowMinY, windowMaxY)
---     return MkUfo {
---         uSkin = Data.loadBMP ufoBitmap,
---         uHitBox = MkHitBox { hPosition = (randomX, randomY), hRadius = ufoSize / 2 },
---         uVelocity = (30, 30),
---         uCollided = False
---     }
--- 
--- addUfo :: UFO -> [UFO] -> [UFO]
--- addUfo ufo ufos = ufo : ufos
+-- data UFO = MkUfo {
+--     uId   :: Identifier,
+--     uSkin :: IO Picture,
+--     uHitBox :: HitBox,
+--     uVelocity :: Data.Vector,
+--     uExploding :: Exploding,
+--     uCollided :: Collided
+-- }
+
+addUFO :: GameState -> IO GameState
+addUFO gameState@(MkGameState { gsUFOSkin = skin }) = do 
+     randomX  <- randomRIO (windowMinX, windowMaxX)
+     randomY  <- randomRIO (windowMinY, windowMaxY)
+     randDirX <- randomRIO (-1.0 :: Float, 1.0)
+     randDirY <- randomRIO (-1.0 :: Float, 1.0)
+
+     return $ gameState' {
+        gsUfos = MkUfo {
+          uId = id,
+          uSkin = skin,
+          uHitBox = MkHitBox {hPosition = (randomX, randomY), hRadius = ufoSize / 2},
+          uVelocity = mulSV ufoSpeed (normalizeV (randDirX, randDirY)),
+          uExploding = False,
+          uCollided = False
+        } : gsUfos gameState
+     }
+     where 
+      (id, gameState') = getIdentifier gameState
+
 
 -- ------------------------------------ --
 --              V I E W                 --
