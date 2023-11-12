@@ -261,7 +261,7 @@ initialState = do
     highScores           <- loadHighScores highScoresPath
 
     return MkGameState {
-        gsScreen = HighScores,
+        gsScreen = Main,
         gsEnemyTimer = 0,
         gsSpaceship = undefined,
         gsAsteroids = [],
