@@ -51,7 +51,7 @@ stepUfo delta gameState@(MkGameState {gsUfos = ufos}) =
             newHitBox = moveHitBox delta velocity hitBox
 
 moveUfo :: Float -> [UFO] -> [UFO]
-moveUfo delta ufos = map moveSingleUfo ufos
+moveUfo delta = map moveSingleUfo
   where
     moveSingleUfo ufo = ufo {uHitBox = newHitBox}
       where
