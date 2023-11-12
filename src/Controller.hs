@@ -11,17 +11,19 @@ import UFO
 import Auxiliary.Operations
 import Bullet (stepBullets)
 import qualified Data.Set as S
+import HighScores
 
 
 -- handle one iteration of the game
 step :: Float -> GameState -> IO GameState
-step secs  gameState@(MkGameState {gsScreen = screen}) =
-    case screen of 
-        Main       -> mainStep secs gameState
-        Game       -> gameStep secs gameState
-        Pause      -> pauseStep secs gameState
-        HighScores -> highScoresStep secs gameState
-
+step secs gameState@(MkGameState {gsScreen = screen, gsIsPaused = isPaused})
+    | checkGameOver gameState = return $ gameState { gsScreen = HighScores }
+    | otherwise =
+        case screen of
+            Main       -> mainStep secs gameState
+            Game       -> gameStep secs gameState
+            Pause      -> pauseStep secs gameState
+            HighScores -> highScoresStep secs gameState
 
 mainStep :: Float -> GameState -> IO GameState
 mainStep _ gameState@(MkGameState {gsKeys = keys})
@@ -31,6 +33,7 @@ mainStep _ gameState@(MkGameState {gsKeys = keys})
 gameStep :: Float -> GameState -> IO GameState
 gameStep secs = return
               . checkPause
+              . checkGameOver
               . stepBullets secs
               . stepUfo secs
               . stepAsteroid secs
@@ -41,6 +44,8 @@ gameStep secs = return
             | S.notMember KBpause keys &&  isPaused = gameState{gsIsPaused = False}
             | S.member KBpause keys && not isPaused = gameState{gsScreen = Pause}
             | otherwise = gameState
+        checkGameOver :: GameState -> Bool
+        checkGameOver gameState = gsLives (gsSpaceship gameState) <= 0
 
 pauseStep :: Float -> GameState -> IO GameState
 pauseStep _ gameState@(MkGameState {gsKeys = keys, gsIsPaused = isPaused})
@@ -48,11 +53,13 @@ pauseStep _ gameState@(MkGameState {gsKeys = keys, gsIsPaused = isPaused})
         | S.member    KBpause keys &&     isPaused = return $ gameState {gsScreen = Game}
         | otherwise = return gameState
 
+---this does not work yet---
 highScoresStep :: Float -> GameState -> IO GameState
-highScoresStep _ gameState@(MkGameState {gsKeys = keys})
-    | S.member KBScore keys && gsScreen gameState /= HighScores = return $ gameState {gsScreen = HighScores}
-    | S.member KBScore keys && gsScreen gameState == HighScores = return $ gameState {gsScreen = Game}
-    | otherwise = return gameState
+highScoresStep _ gameState = do
+    let highScores = undefined
+    let playerScore = undefined
+    let updatedHighScores = updateHighScores highScores playerScore
+
 
 -- handle user input
 input :: Event -> GameState -> IO GameState
@@ -76,7 +83,6 @@ toKeyboardKey (EventKey k _ _ _) =
         SpecialKey KeySpace -> KBspace -- space bar
         SpecialKey KeyEnter -> KBenter -- enter key
         Char 'p'            -> KBpause -- p key
-        Char 's'            -> KBScore -- s key
         _                   -> KBnone  -- key not recognized
 
 -- key released

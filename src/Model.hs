@@ -142,7 +142,7 @@ initialState = do
     randomUfo            <- initUfo
 
     return MkGameState {
-        gsScreen = Game,
+        --gsScreen = Game,
         gsSpaceship = initSpaceShip,
         gsAsteroids = [randomSmallAsteroid, randomMediumAsteroid, randomLargeAsteroid],
         gsUfos = [randomUfo],
