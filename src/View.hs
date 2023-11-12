@@ -46,15 +46,15 @@ gameView gameState@(MkGameState {gsScore = score, gsSpaceship = spaceship}) = do
         livesText = Translate (- fromIntegral windowWidth / 2 + 10) (fromIntegral windowHeight / 2 - 50) $ Scale 0.15 0.15 $ Color white $ Text $ "lives: " ++ show (sLives spaceship)
 
     return $ Pictures $
-        [  scoreText,
-           livesText,
-           spaceshipPicture,
+        [  spaceshipPicture,
            spaceshipPictureHB ]
         ++ asteroidPictures
         ++ asteroidPicturesHB
         ++ ufoPictures
         ++ ufoPicturesHB
         ++ bulletPictures
+        ++ [ scoreText,
+             livesText ]
 
 -----------------------------------------
 --             P A U S E               --
