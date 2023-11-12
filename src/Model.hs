@@ -172,15 +172,16 @@ initialState = do
     randomMediumAsteroid <- initAsteroid Medium
     randomLargeAsteroid  <- initAsteroid Large
     randomUfo            <- initUfo
+    highScores           <- loadHighScores "high-scores.txt"
 
     return MkGameState {
-        gsScreen = Main,
+        gsScreen = HighScores, --Main,
         gsSpaceship = initSpaceShip,
         gsAsteroids = [randomSmallAsteroid, randomMediumAsteroid, randomLargeAsteroid],
         gsUfos = [randomUfo],
         gsBullets = [],
         gsScore = 0,
-        gsHighScores = undefined,--loadHighScores "high-scores.txt",
+        gsHighScores = highScores,
         gsKeys = S.empty,
         gsIsPaused = False
     }
