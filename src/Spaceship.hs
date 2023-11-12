@@ -2,7 +2,7 @@
 module Spaceship where
 
 import Graphics.Gloss ( white, circle, color, Picture (Translate, Rotate, Color), Point, Vector, translate, red, line )
-import Model ( Spaceship (MkSpaceship, sHitBox, sVelocity, sSkin, sDirection, sCooldown),
+import Model ( Spaceship (MkSpaceship, sHitBox, sVelocity, sSkin, sDirection, sCooldown, sCollided),
                HitBox (MkHitBox, hPosition, hRadius),
                GameState (MkGameState, gsSpaceship, gsKeys), Keys, KeyBoard (KBup, KBleft, KBright, KBspace), Cooldown, Collidable (..)
              )
@@ -23,7 +23,8 @@ import qualified Data.Set as S
 ------------------------------------------
 instance Collidable Spaceship where
     getHitBox = sHitBox 
-    collided = undefined
+    didCollide = sCollided
+    afterCollision = undefined
 
 -- ------------------------------------ --
 --              V I E W                 --

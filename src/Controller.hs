@@ -10,28 +10,47 @@ import Asteroid
 import UFO
 import Auxiliary.Operations
 import Bullet (stepBullets)
-import Graphics.Gloss.Interface.IO.Game (Event(EventKey))
 import qualified Data.Set as S
 
 
--- | Handle one iteration of the game
+-- handle one iteration of the game
 step :: Float -> GameState -> IO GameState
-step secs = return
-            . stepBullets secs
-            . stepUfo secs
-            . stepAsteroid secs
-            . stepSpaceShip secs
+step secs  gameState@(MkGameState {gsScreen = screen}) =
+    case screen of 
+        Main       -> mainStep secs gameState
+        Game       -> gameStep secs gameState
+        Pause      -> pauseStep secs gameState
+        HighScores -> highScoresStep secs gameState
 
--- | Handle user input
+
+mainStep :: Float -> GameState -> IO GameState
+mainStep = undefined
+
+gameStep :: Float -> GameState -> IO GameState
+gameStep secs = return
+              . stepBullets secs
+              . stepUfo secs
+              . stepAsteroid secs
+              . stepSpaceShip secs
+
+pauseStep :: Float -> GameState -> IO GameState
+pauseStep = undefined
+
+highScoresStep :: Float -> GameState -> IO GameState
+highScoresStep = undefined
+
+
+
+-- handle user input
 input :: Event -> GameState -> IO GameState
-input event@(EventKey _ state _ _) gameState = 
+input event@(EventKey _ state _ _) gameState =
     case toKeyboardKey event of
         KBnone -> return gameState
-        key    -> case state of 
-            Down -> return $ gameState {gsKeys = S.insert key (gsKeys gameState)} 
+        key    -> case state of
+            Down -> return $ gameState {gsKeys = S.insert key (gsKeys gameState)}
             Up   -> return $ gameState {gsKeys = S.delete key (gsKeys gameState)}
 
-input _ gameState = return gameState 
+input _ gameState = return gameState
 
 
 

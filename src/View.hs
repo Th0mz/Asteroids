@@ -11,7 +11,20 @@ import Bullet (renderBullet)
     --  InfoToShow(ShowAChar, ShowNothing, ShowANumber))
 
 view :: GameState -> IO Picture
-view gameState = do
+view gameState@(MkGameState {gsScreen = screen}) =
+    case screen of 
+        Main       -> mainView gameState
+        Game       -> gameView gameState
+        Pause      -> pauseView gameState
+        HighScores -> highScoresView gameState
+
+-- main screen view
+mainView :: GameState -> IO Picture
+mainView gameState = undefined
+
+-- game screen view
+gameView :: GameState -> IO Picture 
+gameView gameState = do
     spaceshipPicture   <- renderSpaceship       (gsSpaceship gameState)
     spaceshipPictureHB <- renderSpaceshipHB     (gsSpaceship gameState)
     asteroidPictures   <- mapM renderAsteroid   (gsAsteroids gameState)
@@ -28,10 +41,11 @@ view gameState = do
         ++ ufoPictures
         ++ ufoPicturesHB
         ++ bulletPictures
-    
-viewPure :: GameState -> Picture
--- viewPure gsate = case infoToShow gstate of
---     ShowNothing   -> blank
---     ShowANumber n -> color green (text (show n))
---     ShowAChar   c -> color green (text [c])
-viewPure = undefined
+
+-- pause screen view
+pauseView :: GameState -> IO Picture
+pauseView gameState = undefined
+
+-- high scores view
+highScoresView :: GameState -> IO Picture
+highScoresView gameState = undefined

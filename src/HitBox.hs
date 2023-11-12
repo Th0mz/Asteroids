@@ -5,7 +5,13 @@ import Model
 import Auxiliary.Operations
 
 checkCollisions :: GameState -> GameState
-checkCollisions = undefined
+checkCollisions gameState = undefined
+    where 
+        spaceship = gsSpaceship gameState
+        bullets = gsBullets gameState
+        asteroids = gsAsteroids gameState
+        ufos = gsUfos gameState
+
 
 -- auxiliary function
 moveHitBox :: Float -> Vector -> HitBox -> HitBox

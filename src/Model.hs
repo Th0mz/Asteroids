@@ -11,7 +11,7 @@ import qualified Data.Set as S
 -- properties
 type Radius = Float
 type LifeTime = Float
-type Exploding = Bool
+type Collided = Bool
 type Cooldown = Float
 
 -- point operations
@@ -19,9 +19,10 @@ pDistance :: Point -> Point -> Float
 pDistance (x, y) (x', y') = sqrt $ (x' - x) ** 2 + (y' - y) ** 2
 
 class Collidable a where
-    getHitBox   :: a -> HitBox  
-    collided    :: a -> GameState -> GameState
-    isColliding :: Collidable b => a -> b -> Bool
+    getHitBox      :: a -> HitBox
+    didCollide     :: a -> Collided
+    afterCollision :: a -> GameState -> GameState
+    isColliding    :: Collidable b => a -> b -> Bool
     isColliding x y = pDistance posX posY < rX + rY
         where 
             -- x object information 
@@ -48,7 +49,7 @@ data Spaceship = MkSpaceship {
     sHitBox :: HitBox, 
     sDirection :: Data.Vector,
     sVelocity :: Data.Vector,
-    sExploding :: Exploding 
+    sCollided :: Collided 
 }
 
 initSpaceShip :: Spaceship
@@ -59,7 +60,7 @@ initSpaceShip = MkSpaceship {
     sHitBox = MkHitBox {hPosition = (0, 0), hRadius = spaceshipSize / 2},
     sDirection = (0, 1),
     sVelocity = (0, 0),
-    sExploding = False
+    sCollided = False
 }
 
 -- asteroid
@@ -68,7 +69,7 @@ data Asteroid = MkAsteroid {
     aSkin :: IO Picture,
     aHitBox :: HitBox, 
     aVelocity :: Data.Vector, 
-    aExploding :: Exploding, 
+    aCollided :: Collided, 
     aSize :: Size
 }
 
@@ -87,7 +88,7 @@ initAsteroid size = do
             Large -> lAsteroidSize / 2
       },
         aVelocity = (20, 20),
-        aExploding = False,
+        aCollided = False,
         aSize = size
     }
 
@@ -98,7 +99,8 @@ addAsteroid asteroid asteroids = asteroid : asteroids
 data Bullet = MkBullet {
     bHitBox :: HitBox, 
     bVelocity :: Data.Vector, 
-    bLifeTime :: LifeTime
+    bLifeTime :: LifeTime, 
+    bCollided :: Collided
 }
 
 -- ufo
@@ -106,7 +108,7 @@ data UFO = MkUfo {
     uSkin :: IO Picture,
     uHitBox :: HitBox, 
     uVelocity :: Data.Vector, 
-    uExploding :: Exploding
+    uCollided :: Collided
 }
 
 initUfo :: IO UFO
@@ -117,7 +119,7 @@ initUfo = do
         uSkin = Data.loadBMP ufoBitmap,
         uHitBox = MkHitBox { hPosition = (randomX, randomY), hRadius = ufoSize / 2 },
         uVelocity = (30, 30),
-        uExploding = False
+        uCollided = False
     }
 
 addUfo :: UFO -> [UFO] -> [UFO]
@@ -136,6 +138,8 @@ type HighScores = [HSEntry]
 loadHighScores :: String -> HighScores
 loadHighScores _ = [] 
 
+data Screen = Main | Game | Pause | HighScores
+
 -- player input
 type Keys = S.Set KeyBoard
 data KeyBoard = KBup | KBleft | KBright | KBspace | KBpause | KBnone
@@ -150,6 +154,7 @@ initialState = do
     randomUfo            <- initUfo
 
     return MkGameState {
+        gsScreen = Game,
         gsSpaceship = initSpaceShip,
         gsAsteroids = [randomSmallAsteroid, randomMediumAsteroid, randomLargeAsteroid],
         gsUfos = [randomUfo],
@@ -161,6 +166,7 @@ initialState = do
     }
 
 data GameState = MkGameState {
+    gsScreen     :: Screen,
     gsSpaceship  :: Spaceship,
     gsAsteroids  :: [Asteroid],
     gsUfos       :: [UFO],

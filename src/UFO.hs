@@ -2,7 +2,7 @@
 module UFO where
 
 import Graphics.Gloss ( white, circle, color, Picture (Translate), Point, Vector, translate )
-import Model ( UFO (MkUfo, uHitBox, uVelocity, uSkin),
+import Model ( UFO (MkUfo, uHitBox, uVelocity, uSkin, uCollided),
                Spaceship (MkSpaceship, sHitBox, sVelocity, sSkin),
                HitBox (MkHitBox, hPosition, hRadius),
                GameState (MkGameState, gsUfos), Collidable (..)
@@ -18,7 +18,8 @@ import Hitbox
 ------------------------------------------
 instance Collidable UFO where
     getHitBox = uHitBox 
-    collided = undefined
+    didCollide = uCollided
+    afterCollision = undefined
 
 -- ------------------------------------ --
 --              V I E W                 --

@@ -15,7 +15,8 @@ import Hitbox
 ------------------------------------------
 instance Collidable Asteroid where
     getHitBox = aHitBox 
-    collided = undefined
+    didCollide = aCollided
+    afterCollision = undefined
 
 -- ------------------------------------ --
 --              V I E W                 --
@@ -66,7 +67,7 @@ moveAsteroid delta asteroids = map moveSingleAsteroid asteroids
 -- exploding (creates 2 smaller asteroids when one is shot)
 explodeAsteroid :: Asteroid -> [Asteroid]
 explodeAsteroid asteroid
-    | aExploding asteroid = case aSize asteroid of
+    | aCollided asteroid = case aSize asteroid of
         Large -> []--[randomMediumAsteroid, randomMediumAsteroid] 
         Medium -> []--[randomSmallAsteroid, randomSmallAsteroid]
         Small -> []

@@ -12,7 +12,8 @@ import Hitbox
 ------------------------------------------
 instance Collidable Bullet where
     getHitBox = bHitBox 
-    collided = undefined
+    didCollide = bCollided
+    afterCollision = undefined
 
 -- ------------------------------------ --
 --              V I E W                 --
