@@ -129,7 +129,7 @@ type Score = Int
 
 -- player input
 type Keys = S.Set KeyBoard
-data KeyBoard = KBup | KBleft | KBright | KBspace | KBpause | KBnone
+data KeyBoard = KBup | KBleft | KBright | KBspace | KBenter | KBpause | KBnone
     deriving (Eq, Ord)
 
 
@@ -141,6 +141,7 @@ initialState = do
     randomUfo            <- initUfo
 
     return MkGameState {
+        gsScreen = Game,
         gsSpaceship = initSpaceShip,
         gsAsteroids = [randomSmallAsteroid, randomMediumAsteroid, randomLargeAsteroid],
         gsUfos = [randomUfo],

@@ -24,7 +24,9 @@ step secs  gameState@(MkGameState {gsScreen = screen}) =
 
 
 mainStep :: Float -> GameState -> IO GameState
-mainStep = undefined
+mainStep _ gameState@(MkGameState {gsKeys = keys})
+    | S.member KBenter keys = return $ gameState {gsScreen = Game}
+    | otherwise = return gameState
 
 gameStep :: Float -> GameState -> IO GameState
 gameStep secs = return
@@ -71,6 +73,7 @@ toKeyboardKey (EventKey k _ _ _) =
         SpecialKey KeyLeft  -> KBleft  -- left key
         SpecialKey KeyRight -> KBright -- right key
         SpecialKey KeySpace -> KBspace -- space bar
+        SpecialKey KeyEnter -> KBenter -- enter key
         Char 'p'            -> KBpause -- p key
         _                   -> KBnone  -- key not recognized
 
